@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 - Shared memory tiling in force kernel
 - Framework for initial condition distributions
 - Distance softening as a scene description field
+- Distribution as a scene description field
+- Links to tags in CHANGELOG.md
 
 ### Fixed
 - Fix initial step overwriting bug in main loop
@@ -26,3 +28,7 @@ All notable changes to this project will be documented in this file.
 - CSV data logging for visualization (currently commented out for performance testing)
 - Performance benchmarking via `std::chrono`
 - Memory usage tracking via `GetProcessMemoryInfo()`
+
+[0.1.2]: https://gitlab.com/yks4892825/nbody/-/tags/v0.1.2
+[0.1.1]: https://gitlab.com/yks4892825/nbody/-/tags/v0.1.1
+[0.1.0]: https://gitlab.com/yks4892825/nbody/-/tags/v0.1.0
