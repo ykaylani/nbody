@@ -10,8 +10,8 @@ All notable changes to this project will be documented in this file.
 - Links to tags in CHANGELOG.md
 
 ### Fixed
-- Fix initial step overwriting bug in main loop
-- Fix inconsistent naming schemes of variables to snake_case
+- Initial step data export overwriting bug in main loop
+- Inconsistent naming schemes of variables to snake_case
 
 ## [0.1.1] - 2026-07-16
 ### Added
@@ -29,6 +29,6 @@ All notable changes to this project will be documented in this file.
 - Performance benchmarking via `std::chrono`
 - Memory usage tracking via `GetProcessMemoryInfo()`
 
-[0.1.2]: https://gitlab.com/yks4892825/nbody/-/tags/v0.1.2
-[0.1.1]: https://gitlab.com/yks4892825/nbody/-/tags/v0.1.1
+[0.1.2]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.1...v0.1.2
+[0.1.1]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.0...v0.1.1
 [0.1.0]: https://gitlab.com/yks4892825/nbody/-/tags/v0.1.0
