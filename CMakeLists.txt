@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 4.2)
 project(nbody CUDA)
 
-set(CMAKE_CUDA_STANDARD 26)
+set(CMAKE_CUDA_STANDARD 20)
 
 add_executable(nbody main.cu
         src/data/body_data.h

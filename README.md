@@ -19,25 +19,45 @@ To compile and run this project, you will need:
 * `src/data/scene_desc.h`: Defines the `SceneDescription` parameters (body count, step count, delta time, etc.).
 * `main.cu`: The primary application entry point, memory allocation, and simulation loop.
 
-## Configuration
-Currently, simulation parameters are configured directly within `main.cu` via the `SceneDescription` struct:
+## Build Guidelines
+
+### 1. Configuration (Pre-build)
+Currently, simulation parameters are configured directly within `main.cu`. Before compiling, open `main.cu` and modify the `SceneDescription` struct to suit your requirements:
+
 ```cpp
-SceneDescription scene_desc {
-    45000,   // bodyCount: Number of particles
-    true,    // equalMass: Flag for simplified mass calculations
-    100,     // steps: Total simulation steps to execute
-    0.02     // dt: Delta time per step
+SceneDescription scene_description {
+    45000,             // body_count_: Number of particles
+    100,               // steps_: Total simulation steps to execute
+    0.02,              // dt_: Delta time per step
+    true,              // equal_mass_: Flag for simplified mass calculations
+    false,             // cuda_err_: Flag for CUDA error checking
+    true,              // export_data_: Flag for data export
+    "C:/Users/USER..." // data_directory: Output path (defaults to executable directory if empty)
 };
 ```
-## Notes on CSV Logging
-By default, the CSV data logging functions `CSVSave()` and device synchronization checks inside the main loop are commented out to strictly benchmark the raw compute performance of the CUDA kernel.
 
-### To export data:
+### 2. Building
+This project requires CMake 4.2+, a C++20 compatible compiler (such as MSVC on Windows), and the CUDA Toolkit (on CUDA standard 26).
+1. Open a terminal
+2. Navigate to the root directory of the project
+3. Create a build directory: 
+```bash 
+mkdir build
+cd build
+```
+4. Generate the build from CMake, then compile the executable:
+```bash
+cmake ..
+cmake --build . --config Release
+```
+Once the build process is complete, the executable should be located inside a subfolder (typically named Release).
+To run the simulation:
+```bash
+.\Release\nbody.exe
+```
 
-1. Uncomment the file stream and CSVSave calls inside the main.cu loop.
-1. Update the absolute output path (D:/env/empi/NBodyData/...) to match your local directory structure before compiling.
 
 ## Extra Information
 
-- This project is licensed using the [MIT License](LICENSE).
 - The entire update history of this project will be stored in the [Changelog](CHANGELOG.md).
+- This project is licensed using the [MIT License](LICENSE).
