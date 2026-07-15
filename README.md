@@ -53,7 +53,7 @@ cmake --build . --config Release
 Once the build process is complete, the executable should be located inside a subfolder (typically named Release).
 To run the simulation:
 ```bash
-.\Release\nbody.exe
+./Release/nbody.exe
 ```
 
 
