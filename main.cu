@@ -10,8 +10,9 @@
 
 #include "src/data/body_data.h"
 #include "src/data/scene_desc.h"
+#include "src/distributions.h"
 
-__global__ void Run(float3* positions, float3* velocities, float3* positions2, float3* velocities2, float* inv_masses, uint32_t body_count_, float dt_, uint32_t step, bool equal_mass_);
+__global__ void Run(float3* positions, float3* velocities, float3* positions2, float3* velocities2, const float* __restrict__ inv_masses, uint32_t bodyCount, float dt, uint32_t step, float softening, bool equalMass);
 
 void CSVSave(std::ofstream& file, float3* dataPos, float3* dataVel, int count, float current_time) {
     for (int i = 0; i < count; i++) {
@@ -34,19 +35,21 @@ size_t getMemoryUsage() {
 
 int main() {
     std::cout << "Initializing" << std::endl;
-    int block_threads = 256;
-
     SceneDescription scene_desc {
+        SceneDistribution::RANDOM_CUBE,
         45000,
-        10,
-        0.02,
+        100,
+        0.02f,
+        4.0f,
 
         true,
         false,
-        true,
+        false,
     };
 
-    int blocks_grid = (scene_desc.body_count_ + block_threads - 1) / block_threads;
+    uint16_t block_threads = 256;
+    uint32_t blocks_grid = (scene_desc.body_count_ + block_threads - 1) / block_threads;
+    size_t shared_memory_bytes = block_threads * (sizeof(float3) + sizeof(float));
 
     BodyData bodyData {
         scene_desc.body_count_,
@@ -54,9 +57,9 @@ int main() {
     };
 
     for (int i = 0; i < scene_desc.body_count_; i++) {
-        bodyData.positions_1_[i] = {(float)(rand() % 10000 - 100), (float)(rand() % 10000 - 100), (float)(rand() % 10000 - 100)};
+        bodyData.positions_1_[i] = GetPosition(scene_desc.distribution_, 10000, -10000);
         bodyData.velocities_1_[i] = {0.0f, 0.0f, 0.0f};
-        if (!scene_desc.equal_mass_) { bodyData.inverse_masses_[i] = 1.0f / 5e8f; } else { bodyData.inverse_masses_[0] = 1.0f / 5e8f; }
+        if (!scene_desc.equal_mass_) { bodyData.inverse_masses_[i] = 1.0f / 5e16f; } else { bodyData.inverse_masses_[0] = 1.0f / 5e16f; }
     }
 
     std::filesystem::path export_data_path;
@@ -75,7 +78,7 @@ int main() {
 
     for (int i = 0; i < scene_desc.steps_; i++) {
 
-        Run<<<blocks_grid, block_threads>>>(bodyData.positions_1_, bodyData.velocities_1_, bodyData.positions_2_, bodyData.velocities_2_, bodyData.inverse_masses_, scene_desc.body_count_, scene_desc.dt_, i, scene_desc.equal_mass_);
+        Run<<<blocks_grid, block_threads, shared_memory_bytes>>>(bodyData.positions_1_, bodyData.velocities_1_, bodyData.positions_2_, bodyData.velocities_2_, bodyData.inverse_masses_, scene_desc.body_count_, scene_desc.dt_, i, scene_desc.softening_, scene_desc.equal_mass_);
 
         if (scene_desc.cuda_err_) {
             cudaError_t launch_err = cudaGetLastError();
@@ -89,13 +92,10 @@ int main() {
                 std::cerr << "Kernel execution failed: " << cudaGetErrorString(sync_err) << std::endl;
                 return -1;
             }
-        } else {
-
-            cudaDeviceSynchronize();
-        }
+        } else { cudaDeviceSynchronize(); }
 
         if (scene_desc.export_data_) {
-            std::ofstream outfile(export_data_path / std::format("simulation_results_{}.csv", i));
+            std::ofstream outfile(export_data_path / std::format("simulation_results_{}.csv", i + 1));
             outfile << "time,body_id,x,y,z,velx,vely,velz\n";
 
             if (i % 2 == 0) {

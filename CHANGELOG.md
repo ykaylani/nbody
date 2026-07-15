@@ -1,14 +1,24 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.2] - 2026-07-16
+### Added
+- Shared memory tiling in force kernel
+- Framework for initial condition distributions
+- Distance softening as a scene description field
+
+### Fixed
+- Fix initial step overwriting bug in main loop
+- Fix inconsistent naming schemes of variables to snake_case
+
 ## [0.1.1] - 2026-07-16
 ### Added
 - Flag for CUDA error checks
 - Flag for data export
 
 ### Changed
-- Default data export directory is now the executable directory
-- Replaced commented-out data export and error-checking code with conditional branches controlled by flags
+- Set data export directory to the executable directory
+- Replace commented-out data export and error-checking code with conditional branches controlled by flags
 
 ## [0.1.0] - 2026-07-14
 ### Added

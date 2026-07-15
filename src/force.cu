@@ -1,61 +1,66 @@
 __constant__ float c_gravitational = 6.6743e-11;
 
-__global__ void Run(float3* positions, float3* velocities, float3* positions2, float3* velocities2, float* inv_masses, uint32_t bodyCount, float dt, uint32_t step, bool equalMass) {
+__global__ void Run(float3* positions, float3* velocities, float3* positions2, float3* velocities2, const float* __restrict__ inv_masses, const  uint32_t bodyCount, const float dt, const uint32_t step, const float softening, const bool equalMass) {
     uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= bodyCount) return;
 
+    const float3* current_positions = (step % 2 == 0) ? positions : positions2;
+    const float3* current_velocities = (step % 2 == 0) ? velocities : velocities2;
+    const float* current_invmasses = inv_masses;
+
     float3 force = {0, 0, 0};
 
-    float3 process_pos;
-    float3 process_velocity;
-    float process_invmass;
+    float3 process_position = current_positions[idx];
+    float3 process_velocity = current_velocities[idx];
 
-    if (equalMass) { process_invmass = *inv_masses; } else { process_invmass = inv_masses[idx]; }
+    const float process_invmass = (equalMass) ? *inv_masses : inv_masses[idx];
 
-    if (step % 2 == 0) {
-        process_pos = positions[idx];
-        process_velocity = velocities[idx];
-    } else {
-        process_pos = positions2[idx];
-        process_velocity = velocities2[idx];
-    }
+    uint32_t sample_length = (bodyCount + gridDim.x - 1) / gridDim.x;
 
-    for (int i = 0; i < bodyCount; i++) {
-        if (i == idx) { continue; }
+    extern __shared__ char shared_memory[];
+    float3* positions_sampling = (float3*)shared_memory;
+    float* invmasses_sampling = (float*)&positions_sampling[sample_length];
 
-        float3 selected_pos;
+    for (int i = 0; i < gridDim.x; i++) {
+        int tile_start_idx = i * sample_length;
 
-        if (step % 2 == 0) {
-            selected_pos = positions[i];
-        } else {
-            selected_pos = positions2[i];
+        for (int j = threadIdx.x; j < sample_length; j += blockDim.x) {
+            if (tile_start_idx + j < bodyCount) {
+                positions_sampling[j] = current_positions[tile_start_idx + j];
+                invmasses_sampling[j] = current_invmasses[tile_start_idx + j];
+            }
         }
 
-        float sel_invmass;
-        if (equalMass) { sel_invmass = *inv_masses; } else { sel_invmass = process_invmass; }
+        __syncthreads();
 
-        float3 disp = {selected_pos.x - process_pos.x, selected_pos.y - process_pos.y, selected_pos.z - process_pos.z};
+        for (int k = 0; k < sample_length; k++) {
+            float3 selected_position = positions_sampling[k];
+            float selected_invmass = (equalMass) ? process_invmass : invmasses_sampling[k];
 
-        float dist_sqr = disp.x * disp.x + disp.y * disp.y + disp.z * disp.z;
-        float disp_magnitude_inv = rsqrt(dist_sqr);
+            float3 displacement = {selected_position.x - process_position.x, selected_position.y - process_position.y, selected_position.z - process_position.z};
+            float distance_sqr = displacement.x * displacement.x + displacement.y * displacement.y + displacement.z * displacement.z;
+            if (distance_sqr < 0.01f) { continue; }
 
-        if (dist_sqr < 0.01f) { continue; }
-        float force_magnitude = c_gravitational / (sel_invmass * process_invmass * (dist_sqr + 5)); //constant is softening
+            float distance_inv = rsqrt(distance_sqr);
+            float3 displacement_unit = {displacement.x * distance_inv, displacement.y * distance_inv, displacement.z * distance_inv};
 
-        float3 disp_unit = {disp.x * disp_magnitude_inv, disp.y * disp_magnitude_inv, disp.z * disp_magnitude_inv};
-        float3 total = {disp_unit.x * force_magnitude, disp_unit.y * force_magnitude, disp_unit.z * force_magnitude};
+            float force_magnitude = c_gravitational / (selected_invmass * process_invmass * (distance_sqr + softening * softening));
+            float3 total = {displacement_unit.x * force_magnitude, displacement_unit.y * force_magnitude, displacement_unit.z * force_magnitude};
 
-        force = {force.x + total.x, force.y + total.y, force.z + total.z};
+            force = {force.x + total.x, force.y + total.y, force.z + total.z};
+        }
+
+        __syncthreads();
     }
 
-    float3 scaledForce = {force.x * dt * process_invmass, force.y * dt * process_invmass, force.z * dt * process_invmass};
-    float3 vel_new = {process_velocity.x + scaledForce.x, process_velocity.y + scaledForce.y, process_velocity.z + scaledForce.z};
+    float3 scaled_force = {force.x * dt * process_invmass, force.y * dt * process_invmass, force.z * dt * process_invmass};
+    float3 velocity_scaled = {process_velocity.x + scaled_force.x, process_velocity.y + scaled_force.y, process_velocity.z + scaled_force.z};
 
     if (step % 2 == 0) {
-        positions2[idx] = {process_pos.x + vel_new.x * dt, process_pos.y + vel_new.y * dt, process_pos.z + vel_new.z * dt};
-        velocities2[idx] = vel_new;
+        positions2[idx] = {process_position.x + velocity_scaled.x * dt, process_position.y + velocity_scaled.y * dt, process_position.z + velocity_scaled.z * dt};
+        velocities2[idx] = velocity_scaled;
     } else {
-        positions[idx] = {process_pos.x + vel_new.x * dt, process_pos.y + vel_new.y * dt, process_pos.z + vel_new.z * dt};
-        velocities[idx] = vel_new;
+        positions[idx] = {process_position.x + velocity_scaled.x * dt, process_position.y + velocity_scaled.y * dt, process_position.z + velocity_scaled.z * dt};
+        velocities[idx] = velocity_scaled;
     }
 }

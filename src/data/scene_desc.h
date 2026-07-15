@@ -4,10 +4,16 @@
 #include <filesystem>
 #include <optional>
 
+enum SceneDistribution {
+    RANDOM_CUBE,
+};
+
 struct SceneDescription {
+    SceneDistribution distribution_;
     uint32_t body_count_;
     uint32_t steps_;
     float dt_;
+    float softening_;
 
     bool equal_mass_;
     bool cuda_err_;
