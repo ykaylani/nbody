@@ -26,13 +26,9 @@ Currently, simulation parameters are configured directly within `main.cu`. Befor
 
 ```cpp
 SceneDescription scene_description {
-    SceneDistribution::RANDOM_CUBE, //distribution_: Initial condition distribution of system
-    
     45000,             // body_count_: Number of particles
     100,               // steps_: Total simulation steps to execute
     0.02,              // dt_: Delta time per step
-    4.0f,              // softening_: Distance softening for collisionless systems
-    
     true,              // equal_mass_: Flag for simplified mass calculations
     false,             // cuda_err_: Flag for CUDA error checking
     true,              // export_data_: Flag for data export
