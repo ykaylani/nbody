@@ -53,11 +53,12 @@ cmake --build . --config Release
 Once the build process is complete, the executable should be located inside a subfolder (typically named Release).
 To run the simulation:
 ```bash
-.\Release\nbody.exe
+./Release/nbody.exe
 ```
 
 
 ## Extra Information
 
+- Benchmark data is available in the [Benchmarks](BENCHMARKS.md) file.
 - The entire update history of this project will be stored in the [Changelog](CHANGELOG.md).
 - This project is licensed using the [MIT License](LICENSE).
