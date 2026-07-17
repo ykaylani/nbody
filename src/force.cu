@@ -20,6 +20,7 @@ __global__ void Run(float3* positions, float3* velocities, float3* positions2, f
     float3* positions_sampling = (float3*)shared_memory;
     float* masses_sampling = (float*)&positions_sampling[sample_length];
 
+    #pragma unroll
     for (int i = 0; i < gridDim.x; i++) {
         int tile_start_idx = i * sample_length;
         int sampling_idx = tile_start_idx + threadIdx.x;
@@ -31,8 +32,10 @@ __global__ void Run(float3* positions, float3* velocities, float3* positions2, f
 
         __syncthreads();
 
-        int elements_in_tile = min(blockDim.x, bodyCount - tile_start_idx);
-        for (int k = 0; k < elements_in_tile; k++) {
+        int tile_elements = min(blockDim.x, bodyCount - tile_start_idx);
+
+        #pragma unroll
+        for (int k = 0; k < tile_elements; k++) {
 
             float3 selected_position = positions_sampling[k];
             float selected_mass = (equalMass) ? process_mass : masses_sampling[k];

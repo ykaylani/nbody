@@ -27,6 +27,7 @@ Execution: Each version is run 5 times, dropping the highest and lowest anomalie
 
 | Version | Hot Loop Time | Executable Lifetime | Steps / Second (Hz) |
 |:-------:|:-------------:|:-------------------:|:-------------------:|
+| v0.1.4  |    5.73 s     |       6.03 s        |      174.62 Hz      |
 | v0.1.3  |    5.62 s     |       5.95 s        |      177.82 Hz      |
 | v0.1.2  |    7.67 s     |       8.00 s        |      130.33 Hz      |
 | v0.1.1  |    12.45 s    |       12.72 s       |      80.34 Hz       |
