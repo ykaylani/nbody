@@ -1,11 +1,11 @@
 __constant__ float c_gravitational = 6.6743e-11;
 
-__global__ void Run(float3* positions, float3* velocities, float3* positions2, float3* velocities2, const float* __restrict__ masses, const  uint32_t bodyCount, const float dt, const uint32_t step, const float softening, const bool equalMass) {
+__global__ void Run(float3* positions_src, float3* velocities_src, float3* positions_dst, float3* velocities_dst, const float* __restrict__ masses, const uint32_t bodyCount, const float dt, const uint32_t step, const float softening, const bool equalMass) {
     uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= bodyCount) return;
 
-    const float3* current_positions = (step % 2 == 0) ? positions : positions2;
-    const float3* current_velocities = (step % 2 == 0) ? velocities : velocities2;
+    const float3* current_positions = positions_src;
+    const float3* current_velocities = velocities_src;
     const float* current_masses = masses;
 
     float3 acceleration = {0, 0, 0};
@@ -60,11 +60,6 @@ __global__ void Run(float3* positions, float3* velocities, float3* positions2, f
     float3 velocity_delta = {acceleration.x * dt, acceleration.y * dt, acceleration.z * dt};
     float3 velocity_scaled = {process_velocity.x + velocity_delta.x, process_velocity.y + velocity_delta.y, process_velocity.z + velocity_delta.z};
 
-    if (step % 2 == 0) {
-        positions2[idx] = {process_position.x + velocity_scaled.x * dt, process_position.y + velocity_scaled.y * dt, process_position.z + velocity_scaled.z * dt};
-        velocities2[idx] = velocity_scaled;
-    } else {
-        positions[idx] = {process_position.x + velocity_scaled.x * dt, process_position.y + velocity_scaled.y * dt, process_position.z + velocity_scaled.z * dt};
-        velocities[idx] = velocity_scaled;
-    }
+    positions_dst[idx] = {process_position.x + velocity_scaled.x * dt, process_position.y + velocity_scaled.y * dt, process_position.z + velocity_scaled.z * dt};
+    velocities_dst[idx] = velocity_scaled;
 }

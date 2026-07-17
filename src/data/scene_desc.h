@@ -1,8 +1,6 @@
 #ifndef NBODY_SCENE_DESC_H
 #define NBODY_SCENE_DESC_H
 
-#include <optional>
-
 #include "../distributions.h"
 #include "../exporters.h"
 

@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased] 2026-07-17
+### Added
+- VTP Data Export
+### Changed
+- Reworked ping-pong buffers and `cudaDeviceSynchronize()` calls for efficiency
+
 ## [0.1.4] - 2026-07-17
 ### Added
 - `#pragma unroll` in kernel loops
