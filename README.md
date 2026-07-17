@@ -5,7 +5,6 @@ A high-performance, GPU-accelerated N-Body simulation written in C++ and CUDA. T
 ## Features
 * **GPU Acceleration:** Core physics calculations are offloaded to the GPU using CUDA.
 * **Performance Profiling:** Built-in execution time tracking using `std::chrono`.
-* **Memory Monitoring:** Real-time working set memory tracking upon initialization.
 * **Data Export (Optional):** Capable of exporting position and velocity data to CSV format for external visualization (e.g., Python/ParaView).
 
 ## Prerequisites
