@@ -24,16 +24,17 @@ To compile and run this project, you will need:
 Currently, simulation parameters are configured directly within `main.cu`. Before compiling, open `main.cu` and modify the `SceneDescription` struct to suit your requirements:
 
 ```cpp
-SceneDescription scene_description {
-    SceneDistribution::RANDOM_CUBE, // distribution_: Initial conditions distribution function
-    45000,             // body_count_: Number of particles
-    100,               // steps_: Total simulation steps to execute
-    0.02,              // dt_: Delta time per step
-    4.0,               // softening_: Softening for collisionless systems 
-    true,              // equal_mass_: Flag for simplified mass calculations
-    false,             // cuda_err_: Flag for CUDA error checking
-    true,              // export_data_: Flag for data export
-    "C:/Users/USER..." // data_directory: Output path (defaults to executable directory if empty)
+SceneDescription scene_desc {
+    .distribution_ = std::make_unique<Distributions::RandomCube>(15000.0f), // Initial conditions distributor
+    .exporter_ = std::make_unique<Exporters::XDMF>(".", "simulation_data", "simulation_data_org"), // Data exporter
+
+    .body_count_ = 45000, // Body count
+    .steps_ = 1000, // Iterations (how many times should the simulation advance)
+    .dt_ = 0.02f, // physical change in time per step
+    .softening_ = 4.0f, // softening for collisionless systems
+
+    .equal_mass_ = true, // Flag that enables memory optimizations when all bodies have equal mass
+    .cuda_err_ = false, // Flag for CUDA error checking (decreases performance)
 };
 ```
 
