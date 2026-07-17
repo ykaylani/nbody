@@ -38,7 +38,7 @@ SceneDescription scene_desc {
 ```
 
 ### 2. Building
-This project requires CMake 4.2+, a C++20 compatible compiler (such as MSVC on Windows), and the CUDA Toolkit (on CUDA standard 26).
+This project requires CMake 4.2+, a C++20 compatible compiler (such as MSVC on Windows), and the CUDA Toolkit.
 1. Open a terminal
 2. Navigate to the root directory of the project
 3. Create a build directory: 
