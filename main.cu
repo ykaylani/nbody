@@ -3,9 +3,6 @@
 #include <fstream>
 #include <iostream>
 
-#include <windows.h>
-#include <psapi.h>
-
 #include <filesystem>
 
 #include "src/data/body_data.h"
@@ -27,39 +24,35 @@ void CSVSave(std::ofstream& file, float3* dataPos, float3* dataVel, int count, f
     }
 }
 
-size_t getMemoryUsage() {
-    PROCESS_MEMORY_COUNTERS pmc;
-    GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
-    return pmc.WorkingSetSize;
-}
-
 int main() {
     std::cout << "Initializing" << std::endl;
     SceneDescription scene_desc {
-        SceneDistribution::RANDOM_CUBE,
+        std::make_unique<RandomCube>(15000.0f),
         45000,
-        100,
+        1000,
         0.02f,
         4.0f,
 
         true,
         false,
         false,
+        "D:/env/empi/NBodyData/17_7_26/2"
     };
 
     uint16_t block_threads = 256;
     uint32_t blocks_grid = (scene_desc.body_count_ + block_threads - 1) / block_threads;
     size_t shared_memory_bytes = block_threads * (sizeof(float3) + sizeof(float));
 
-    BodyData bodyData {
+    BodyData body_data {
         scene_desc.body_count_,
         scene_desc.equal_mass_,
     };
 
+    scene_desc.distribution_->ApplyPositions(body_data.positions_1_, scene_desc.body_count_);
+    scene_desc.distribution_->ApplyVelocities(body_data.velocities_1_, scene_desc.body_count_);
+
     for (int i = 0; i < scene_desc.body_count_; i++) {
-        bodyData.positions_1_[i] = GetPosition(scene_desc.distribution_, 10000, -10000);
-        bodyData.velocities_1_[i] = {0.0f, 0.0f, 0.0f};
-        if (!scene_desc.equal_mass_) { bodyData.inverse_masses_[i] = 1.0f / 5e16f; } else { bodyData.inverse_masses_[0] = 1.0f / 5e16f; }
+        if (!scene_desc.equal_mass_) { body_data.masses_[i] = 5e17f; } else { body_data.masses_[0] = 5e17f; }
     }
 
     std::filesystem::path export_data_path;
@@ -70,15 +63,16 @@ int main() {
         std::ofstream output_file(export_data_path / "simulation_results_0.csv");
         output_file << "time,body_id,x,y,z,velx,vely,velz\n";
 
-        CSVSave(output_file, bodyData.positions_1_, bodyData.velocities_1_, scene_desc.body_count_, 0.0f);
+        CSVSave(output_file, body_data.positions_1_, body_data.velocities_1_, scene_desc.body_count_, 0.0f);
     }
 
-    std::cout << "Initialization Complete. Working Memory: " << getMemoryUsage() << " bytes" << std::endl;
+    std::cout << "Initialization complete" << std::endl;
+
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
     for (int i = 0; i < scene_desc.steps_; i++) {
 
-        Run<<<blocks_grid, block_threads, shared_memory_bytes>>>(bodyData.positions_1_, bodyData.velocities_1_, bodyData.positions_2_, bodyData.velocities_2_, bodyData.inverse_masses_, scene_desc.body_count_, scene_desc.dt_, i, scene_desc.softening_, scene_desc.equal_mass_);
+        Run<<<blocks_grid, block_threads, shared_memory_bytes>>>(body_data.positions_1_, body_data.velocities_1_, body_data.positions_2_, body_data.velocities_2_, body_data.masses_, scene_desc.body_count_, scene_desc.dt_, i, scene_desc.softening_, scene_desc.equal_mass_);
 
         if (scene_desc.cuda_err_) {
             cudaError_t launch_err = cudaGetLastError();
@@ -99,11 +93,12 @@ int main() {
             outfile << "time,body_id,x,y,z,velx,vely,velz\n";
 
             if (i % 2 == 0) {
-                CSVSave(outfile, bodyData.positions_2_, bodyData.velocities_2_, scene_desc.body_count_, scene_desc.dt_ * (i + 1));
+                CSVSave(outfile, body_data.positions_2_, body_data.velocities_2_, scene_desc.body_count_, scene_desc.dt_ * (i + 1));
             } else {
-                CSVSave(outfile, bodyData.positions_1_, bodyData.velocities_1_, scene_desc.body_count_, scene_desc.dt_ * (i + 1));
+                CSVSave(outfile, body_data.positions_1_, body_data.velocities_1_, scene_desc.body_count_, scene_desc.dt_ * (i + 1));
             }
         }
+
     }
 
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();

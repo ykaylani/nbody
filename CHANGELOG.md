@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2026-07-17
+### Changed
+- Use of mass instead of inverse mass to reduce divisions in hot loop
+- Reworked initial condition distribution to be more readable
+- Simplified shared memory movement
+
+### Removed
+- Memory usage metric (locked project to Windows devices)
+
 ## [0.1.2] - 2026-07-16
 ### Added
 - Shared memory tiling in force kernel
@@ -29,6 +38,7 @@ All notable changes to this project will be documented in this file.
 - Performance benchmarking via `std::chrono`
 - Memory usage tracking via `GetProcessMemoryInfo()`
 
+[0.1.3]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.2...v0.1.3
 [0.1.2]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.1...v0.1.2
 [0.1.1]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.0...v0.1.1
 [0.1.0]: https://gitlab.com/yks4892825/nbody/-/tags/v0.1.0

@@ -10,7 +10,6 @@ A high-performance, GPU-accelerated N-Body simulation written in C++ and CUDA. T
 
 ## Prerequisites
 To compile and run this project, you will need:
-* Windows (relies on `windows.h` and `psapi.h` for memory profiling).
 * Compiler supporting **C++ 20** (required for `<format>`).
 * CUDA Toolkit.
 

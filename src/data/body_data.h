@@ -10,7 +10,7 @@ struct BodyData { // when step is even, output is buffers (two). buffers (one) a
     float3* positions_2_ = nullptr;
     float3* velocities_2_ = nullptr;
 
-    float* inverse_masses_ = nullptr;
+    float* masses_ = nullptr;
 
     BodyData(uint32_t nCount, bool equalMass) {
         cudaMallocManaged(&positions_1_, sizeof(float3) * nCount);
@@ -19,8 +19,8 @@ struct BodyData { // when step is even, output is buffers (two). buffers (one) a
         cudaMallocManaged(&positions_2_, sizeof(float3) * nCount);
         cudaMallocManaged(&velocities_2_, sizeof(float3) * nCount);
 
-        if (equalMass) { cudaMallocManaged(&inverse_masses_, sizeof(float)); }
-        else { cudaMallocManaged(&inverse_masses_, sizeof(float) * nCount); }
+        if (equalMass) { cudaMallocManaged(&masses_, sizeof(float)); }
+        else { cudaMallocManaged(&masses_, sizeof(float) * nCount); }
     }
 
     ~BodyData() {
@@ -30,7 +30,7 @@ struct BodyData { // when step is even, output is buffers (two). buffers (one) a
         cudaFree(positions_2_);
         cudaFree(velocities_2_);
 
-        cudaFree(inverse_masses_);
+        cudaFree(masses_);
     }
 
     BodyData(const BodyData&) = delete;

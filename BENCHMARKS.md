@@ -18,18 +18,19 @@ Execution: Each version is run 5 times, dropping the highest and lowest anomalie
 - RAM: 16GB DDR4-3200 CL16
 
 ### Measured Values
-- Time in Hot loop
-- Total Executable Runtime
+- Hot Loop Time
+- Executable Lifetime
 
 ## Benchmarks
 
 ### Execution Time (all versions)
 
-| Version | Hot loop Time | Total Executable Time | Steps per Second (Hz) |
-| :---: | :---: | :---: | :---: |
-| v0.1.2 | 7.67 s | 8.00 s | 130.33 Hz |
-| v0.1.1 | 12.45 s | 12.72 s | 80.34 Hz |
-| v0.1.0 | 12.38 s | 12.67 s | 80.78 Hz |
+| Version | Hot Loop Time | Executable Lifetime | Steps / Second (Hz) |
+|:-------:|:-------------:|:-------------------:|:-------------------:|
+| v0.1.3  |    5.62 s     |       5.95 s        |      177.82 Hz      |
+| v0.1.2  |    7.67 s     |       8.00 s        |      130.33 Hz      |
+| v0.1.1  |    12.45 s    |       12.72 s       |      80.34 Hz       |
+| v0.1.0  |    12.38 s    |       12.67 s       |      80.78 Hz       |
 
 ### v0.1.2 N-Count Scaling
 This graph shows the hot loop time (in ms) v0.1.2 took for varying N-Counts.

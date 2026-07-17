@@ -4,12 +4,10 @@
 #include <filesystem>
 #include <optional>
 
-enum SceneDistribution {
-    RANDOM_CUBE,
-};
+#include "../distributions.h"
 
 struct SceneDescription {
-    SceneDistribution distribution_;
+    std::unique_ptr<Distribution> distribution_;
     uint32_t body_count_;
     uint32_t steps_;
     float dt_;
