@@ -13,7 +13,7 @@ To compile and run this project, you will need:
 * CUDA Toolkit.
 
 ## Project Structure
-* `src/data/body_data.h`: Defines the `BodyData` structure holding arrays for positions, velocities, and inverse masses.
+* `src/data/body_data.h`: Defines the `BodyData` structure holding arrays for positions, velocities, and masses.
 * `src/data/scene_desc.h`: Defines the `SceneDescription` parameters (body count, step count, delta time, etc.).
 * `main.cu`: The primary application entry point, memory allocation, and simulation loop.
 
