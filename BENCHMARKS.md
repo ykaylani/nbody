@@ -34,7 +34,7 @@ Execution: Each version is run 5 times, dropping the highest and lowest anomalie
 | [v0.1.1] |    12.45 s    |       12.72 s       |      80.34 Hz       |
 | [v0.1.0] |    12.38 s    |       12.67 s       |      80.78 Hz       |
 
-[v0.1.5]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.4..v0.1.5
+[v0.1.5]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.4...v0.1.5
 [v0.1.4]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.3...v0.1.4
 [v0.1.3]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.2...v0.1.3
 [v0.1.2]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.1...v0.1.2
