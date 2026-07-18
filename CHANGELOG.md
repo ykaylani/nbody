@@ -56,7 +56,7 @@ All notable changes to this project will be documented in this file.
 - Memory usage tracking via `GetProcessMemoryInfo()`
 
 
-[0.1.5]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.4..v0.1.5
+[0.1.5]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.4...v0.1.5
 [0.1.4]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.3...v0.1.4
 [0.1.3]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.2...v0.1.3
 [0.1.2]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.1...v0.1.2
