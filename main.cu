@@ -16,7 +16,7 @@ int main() {
 
     SceneDescription scene_desc {
         .distribution_ = std::make_unique<Distributions::Plummer>(15000.0f, 2800.0f),
-        .exporter_ = std::make_unique<Exporters::XDMF>("D:/env/empi/NBodyData/18_7_26/1", "simulation_data", "simulation_data_org"),
+        .exporter_ = nullptr, //std::make_unique<Exporters::XDMF>(".", "simulation_data", "simulation_data_org"),
 
         .body_count_ = 45000,
         .steps_ = 1000,
