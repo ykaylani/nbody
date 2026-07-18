@@ -9,12 +9,14 @@
 #include <cstdint>
 
 struct Exporter {
+    SceneSettings scene_settings;
 
     virtual void Initialize() = 0;
-    virtual void Export(const float3* positions, const float3* velocities, const float* masses, uint32_t body_count, uint32_t step, float dt) = 0;
+    virtual void Export(const float3* positions, const float3* velocities, const float* masses, uint32_t step, float dt) = 0;
     virtual void Finalize() = 0;
 
     virtual ~Exporter() = default;
+    Exporter(const SceneSettings &scene_settings) : scene_settings(scene_settings) {}
 };
 
 namespace Exporters {
@@ -25,7 +27,7 @@ namespace Exporters {
         std::filesystem::path outpath_ = ".";
         std::filesystem::path filename_ = "nbodydata";
 
-        CSV(std::filesystem::path outpath, std::filesystem::path filename) : outpath_(std::move(outpath)), filename_(std::move(filename)) {}
+        CSV(const SceneSettings &scene_settings, std::filesystem::path outpath, std::filesystem::path filename) : Exporter(scene_settings), outpath_(std::move(outpath)), filename_(std::move(filename)) {}
 
         void Initialize() override {
             std::filesystem::path full_path = outpath_ / filename_;
@@ -37,9 +39,9 @@ namespace Exporters {
             outfile_ << "Time,ID,PosX,PosY,PosZ,VelX,VelY,VelZ\n";
         }
 
-        void Export(const float3* positions, const float3* velocities, const float* masses, uint32_t body_count, uint32_t step, float dt) override {
+        void Export(const float3* positions, const float3* velocities, const float* masses, uint32_t step, float dt) override {
 
-            for (int i = 0; i < body_count; i++) {
+            for (int i = 0; i < scene_settings.body_count; i++) {
                 outfile_ << step * dt << ","
                     << i << ","
                     << positions[i].x << ","
@@ -57,7 +59,6 @@ namespace Exporters {
         }
     };
 
-
     struct XDMF : Exporter {
         std::ofstream xmf_file_;
         std::ofstream bin_file_;
@@ -67,7 +68,7 @@ namespace Exporters {
         std::filesystem::path outpath_ = ".";
         std::vector<float> mass_broadcast_;
 
-        XDMF(std::filesystem::path outpath, std::filesystem::path bin_filename, std::filesystem::path xmf_filename) : bin_filename_(std::move(bin_filename)), xmf_filename_(std::move(xmf_filename)), outpath_(std::move(outpath)) {}
+        XDMF(const SceneSettings &scene_settings, std::filesystem::path outpath, std::filesystem::path bin_filename, std::filesystem::path xmf_filename) : Exporter(scene_settings), bin_filename_(std::move(bin_filename)), xmf_filename_(std::move(xmf_filename)), outpath_(std::move(outpath)) {}
 
         void Initialize() override {
             std::filesystem::create_directories(outpath_);
@@ -91,9 +92,9 @@ namespace Exporters {
             )";
         }
 
-        void Export(const float3* positions, const float3* velocities, const float* masses, uint32_t body_count, uint32_t step, float dt) override {
-            size_t vec_bytes = body_count * 3 * sizeof(float);
-            size_t scalar_bytes = body_count * sizeof(float);
+        void Export(const float3* positions, const float3* velocities, const float* masses, uint32_t step, float dt) override {
+            size_t vec_bytes = scene_settings.body_count * 3 * sizeof(float);
+            size_t scalar_bytes = scene_settings.body_count * sizeof(float);
 
             size_t step_start_offset = static_cast<size_t>(bin_file_.tellp());
 
@@ -109,19 +110,19 @@ namespace Exporters {
             xmf_file_ <<
                 R"(<Grid Name="Step_)" << step << R"(" GridType="Uniform">
                     <Time Value=")" << step * dt << R"(" />
-                    <Topology TopologyType="Polyvertex" NumberOfElements=")" << body_count << R"("/>
+                    <Topology TopologyType="Polyvertex" NumberOfElements=")" << scene_settings.body_count << R"("/>
                     <Geometry GeometryType="XYZ">
-                      <DataItem Dimensions=")" << body_count << R"( 3" NumberType="Float" Precision="4" Format="Binary" Seek=")" << pos_offset << R"(" Endian="Native">
+                      <DataItem Dimensions=")" << scene_settings.body_count << R"( 3" NumberType="Float" Precision="4" Format="Binary" Seek=")" << pos_offset << R"(" Endian="Native">
                         )" << bin_filename_.string() << R"(
                       </DataItem>
                     </Geometry>
                     <Attribute Name="Velocity" AttributeType="Vector" Center="Node">
-                      <DataItem Dimensions=")" << body_count << R"( 3" NumberType="Float" Precision="4" Format="Binary" Seek=")" << vel_offset << R"(" Endian="Native">
+                      <DataItem Dimensions=")" << scene_settings.body_count << R"( 3" NumberType="Float" Precision="4" Format="Binary" Seek=")" << vel_offset << R"(" Endian="Native">
                         )" << bin_filename_.string() << R"(
                       </DataItem>
                     </Attribute>
                     <Attribute Name="Mass" AttributeType="Scalar" Center="Node">
-                      <DataItem Dimensions=")" << body_count << R"(" NumberType="Float" Precision="4" Format="Binary" Seek=")" << mass_offset << R"(" Endian="Native">
+                      <DataItem Dimensions=")" << scene_settings.body_count << R"(" NumberType="Float" Precision="4" Format="Binary" Seek=")" << mass_offset << R"(" Endian="Native">
                         )" << bin_filename_.string() << R"(
                       </DataItem>
                     </Attribute>
@@ -145,14 +146,13 @@ namespace Exporters {
         }
     };
 
-
     struct VTP : Exporter {
         std::ofstream outfile_;
         std::filesystem::path outfile_name_ = "nbodydata";
         std::filesystem::path outpath_ = ".";
         std::vector<float> mass_broadcast_;
 
-        VTP(std::filesystem::path outpath, std::filesystem::path outfile_name) : outfile_name_(std::move(outfile_name)), outpath_(std::move(outpath)) {}
+        VTP(const SceneSettings &scene_settings, std::filesystem::path outpath, std::filesystem::path outfile_name) : Exporter(scene_settings), outfile_name_(std::move(outfile_name)), outpath_(std::move(outpath)) {}
 
         void Initialize() override {
             std::filesystem::create_directories(outpath_);
@@ -169,10 +169,10 @@ namespace Exporters {
                          )";
         }
 
-        void Export(const float3* positions, const float3* velocities, const float* masses, uint32_t body_count, uint32_t step, float dt) override {
+        void Export(const float3* positions, const float3* velocities, const float* masses, uint32_t step, float dt) override {
 
-            uint32_t vec_bytes = body_count * 3 * sizeof(float);
-            uint32_t scalar_bytes = body_count * sizeof(float);
+            uint32_t vec_bytes = scene_settings.body_count * 3 * sizeof(float);
+            uint32_t scalar_bytes = scene_settings.body_count * sizeof(float);
 
             std::string step_name = outfile_name_.stem().string() + "_" + std::to_string(step) + ".vtp";
             std::filesystem::path full_step_path = outpath_ / step_name;
@@ -187,7 +187,7 @@ namespace Exporters {
             step_file << R"(<?xml version="1.0"?>
                             <VTKFile type="PolyData" version="0.1" byte_order="LittleEndian" header_type="UInt32">
                               <PolyData>
-                                <Piece NumberOfPoints=")" << body_count << R"(" NumberOfVerts="0" NumberOfLines="0" NumberOfStrips="0" NumberOfPolys="0">
+                                <Piece NumberOfPoints=")" << scene_settings.body_count << R"(" NumberOfVerts="0" NumberOfLines="0" NumberOfStrips="0" NumberOfPolys="0">
                                   <Points>
                                     <DataArray type="Float32" Name="Points" NumberOfComponents="3" format="appended" offset=")" << pos_offset << R"("/>
                                   </Points>

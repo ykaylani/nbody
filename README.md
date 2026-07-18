@@ -23,17 +23,21 @@ To compile and run this project, you will need:
 Currently, simulation parameters are configured directly within `main.cu`. Before compiling, open `main.cu` and modify the `SceneDescription` struct to suit your requirements:
 
 ```cpp
-SceneDescription scene_desc {
-    .distribution_ = std::make_unique<Distributions::RandomCube>(15000.0f), // Initial conditions distributor
-    .exporter_ = std::make_unique<Exporters::XDMF>(".", "simulation_data", "simulation_data_org"), // Data exporter
+    SceneSettings scene_settings {
+        .body_count = 45000, //N-Count of the simulation
+        .steps = 1000, //Step count
+        .dt = 0.02, //Physical time elapsed per step
+        .softening = 4.0f, //Distance offset for collisionless systems
 
-    .body_count_ = 45000, // Body count
-    .steps_ = 1000, // Iterations (how many times should the simulation advance)
-    .dt_ = 0.02f, // physical change in time per step
-    .softening_ = 4.0f, // softening for collisionless systems
+        .cuda_err = false, //CUDA error checking flag
+        .hotloop_time = false, //Hotloop time printing flag
+    };
 
-    .cuda_err_ = false, // Flag for CUDA error checking (decreases performance when enabled)
-};
+    SceneDescription scene_desc {
+        .solver = std::make_unique<Solvers::AllPairs>(scene_settings), //Solver used for propagation
+        .distribution = std::make_unique<Distributions::RandomCube>(scene_settings, 15000.0f), //Distribution used for initial conditions
+        .exporter = std::make_unique<Exporters::XDMF>(scene_settings, ".", "simulation_data", "simulation_data_org"), //Data exporter
+    };
 ```
 
 ### 2. Building

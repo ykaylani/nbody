@@ -1,19 +1,17 @@
 #ifndef NBODY_SCENE_DESC_H
 #define NBODY_SCENE_DESC_H
 
-#include "../distributions.h"
-#include "../exporters.h"
+#include "scene_settings.h"
+#include "../strats/distributions.h"
+#include "../strats/exporters.h"
+#include "../strats/solvers.h"
 
 struct SceneDescription {
-    std::unique_ptr<Distribution> distribution_;
-    std::unique_ptr<Exporter> exporter_;
+    SceneSettings settings;
 
-    uint32_t body_count_;
-    uint32_t steps_;
-    float dt_;
-    float softening_;
-
-    bool cuda_err_;
+    std::unique_ptr<Solver> solver;
+    std::unique_ptr<Distribution> distribution;
+    std::unique_ptr<Exporter> exporter;
 };
 
 #endif //NBODY_SCENE_DESC_H

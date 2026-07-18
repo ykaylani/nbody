@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.1.6] - 2026-07-18
+### Added
+- Framework for solver strategies (All Pairs, Barnes-Hut, etc.)
+### Changed
+- `SceneDescription` structure separated into `SceneDescription` and `SceneSettings` structures
+- Changed name `Run()` of all-pairs kernel to `AllPairsKernel()` and added header file
+
 ## [0.1.5] - 2026-07-18
 ### Added
 - VTP data export functionality
@@ -55,7 +62,7 @@ All notable changes to this project will be documented in this file.
 - Performance benchmarking via `std::chrono`
 - Memory usage tracking via `GetProcessMemoryInfo()`
 
-
+[0.1.6]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.5...v0.1.6
 [0.1.5]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.4...v0.1.5
 [0.1.4]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.3...v0.1.4
 [0.1.3]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.2...v0.1.3

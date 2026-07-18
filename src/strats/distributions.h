@@ -6,9 +6,12 @@
 constexpr float c_gravitational = 6.6743e-11;
 
 struct Distribution {
+    SceneSettings scene_settings;
 
-    virtual void Apply(float3* positions, float3* velocities, float* masses, float mass_assign, uint32_t count) = 0;
+    virtual void Apply(float3* positions, float3* velocities, float* masses, float mass_assign) = 0;
     virtual ~Distribution() = default;
+
+    Distribution(SceneSettings scene_settings) : scene_settings(scene_settings) {}
 };
 
 namespace Distributions {
@@ -17,33 +20,33 @@ namespace Distributions {
         float size_ = 0.0f;
         std::random_device rd;
 
-        void Apply(float3 *positions, float3 *velocities, float *masses, float mass_assign, uint32_t count) override {
+        void Apply(float3 *positions, float3 *velocities, float *masses, float mass_assign) override {
             if (size_ == 0) throw std::invalid_argument("Attempt to use RandomCube distribution of size 0");
             std::mt19937 gen(rd());
             std::uniform_real_distribution<float> dist(-size_, size_);
 
-            for (uint32_t i = 0; i < count; i++) {
+            for (uint32_t i = 0; i < scene_settings.body_count; i++) {
                 positions[i] = {dist(gen), dist(gen), dist(gen)};
                 velocities[i] = {0.0f, 0.0f, 0.0f};
                 masses[i] = mass_assign;
             }
         }
 
-        RandomCube(float size_) : size_(size_) {}
+        RandomCube(const SceneSettings &scene_settings, float size) : Distribution(scene_settings), size_(size) {}
     };
 
     struct RandomSphere : Distribution {
         float radius_ = 0.0f;
         std::random_device rd;
 
-        void Apply(float3 *positions, float3 *velocities, float *masses, float mass_assign, uint32_t count) override {
+        void Apply(float3 *positions, float3 *velocities, float *masses, float mass_assign) override {
             if (radius_ == 0.0f) throw std::invalid_argument("Attempt to use RandomSphere distribution of radius 0");
             std::mt19937 gen(rd());
             std::uniform_real_distribution<float> dist(-radius_, radius_);
 
             float radius_sq = radius_ * radius_;
 
-            for (uint32_t i = 0; i < count;) {
+            for (uint32_t i = 0; i < scene_settings.body_count;) {
                 float x = dist(gen);
                 float y = dist(gen);
                 float z = dist(gen);
@@ -58,7 +61,7 @@ namespace Distributions {
             }
         }
 
-        RandomSphere(float radius_) : radius_(radius_) {}
+        RandomSphere(const SceneSettings &scene_settings, float radius) : Distribution(scene_settings), radius_(radius) {}
     };
 
     struct Plummer : Distribution {
@@ -71,7 +74,7 @@ namespace Distributions {
 
         float system_mass = 0;
 
-        void Apply(float3* positions, float3* velocities, float* masses, float mass_assign, uint32_t count) override {
+        void Apply(float3* positions, float3* velocities, float* masses, float mass_assign) override {
             std::mt19937 gen(rd());
 
             float max_radius_sqr = max_radius * max_radius;
@@ -85,9 +88,9 @@ namespace Distributions {
             std::uniform_real_distribution<float> dist_azimuth(0.0f, 2.0f * std::numbers::pi);
             std::uniform_real_distribution<float> dist_cos(-1.0f, 1.0f);
 
-            system_mass = mass_assign * count;
+            system_mass = mass_assign * scene_settings.body_count;
 
-            for (uint32_t i = 0; i < count; i++) {
+            for (uint32_t i = 0; i < scene_settings.body_count; i++) {
                 float radius = scale_radius / sqrt(pow(dist_constrained(gen), -2.0f/3.0f) - 1);
                 float z = radius - 2 * dist(gen) * radius;
                 float azimuth = 2 * std::numbers::pi * dist(gen);
@@ -121,8 +124,7 @@ namespace Distributions {
             }
         }
 
-        Plummer(float max_radius_, float scale_radius_) : max_radius(max_radius_), scale_radius(scale_radius_) {}
-
+        Plummer(const SceneSettings &scene_settings, float max_radius_, float scale_radius_) :Distribution(scene_settings), max_radius(max_radius_), scale_radius(scale_radius_) {}
     };
 }
 

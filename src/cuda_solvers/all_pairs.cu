@@ -1,10 +1,11 @@
 __constant__ float c_gravitational = 6.6743e-11;
 
-__global__ void Run(float3* positions_src, float3* velocities_src, float3* positions_dst, float3* velocities_dst, const float* __restrict__ masses, const uint32_t bodyCount, const float dt, const float softening) {
+__global__ void AllPairsKernel(float3* positions_src, float3* velocities_src, float3* positions_dst, float3* velocities_dst, const float* __restrict__ masses, const uint32_t bodyCount, const float dt, const float softening) {
     uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= bodyCount) return;
 
     float3 acceleration = {0, 0, 0};
+
     const float3 process_position = positions_src[idx];
     const float3 process_velocity = velocities_src[idx];
 

@@ -6,8 +6,11 @@ set(CMAKE_CUDA_STANDARD 20)
 add_executable(nbody main.cu
         src/data/body_data.h
         src/data/scene_desc.h
-        src/force.cu
-        src/exporters.h)
+        src/cuda_solvers/all_pairs.cu
+        src/strats/exporters.h
+        src/strats/solvers.h
+        src/data/scene_settings.h
+        src/cuda_solvers/all_pairs.cuh)
 
 set_target_properties(nbody PROPERTIES
         CUDA_SEPARABLE_COMPILATION ON

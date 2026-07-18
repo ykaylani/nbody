@@ -21,12 +21,15 @@ Execution: Each version is run 5 times, dropping the highest and lowest anomalie
 - Hot Loop Time
 - Executable Lifetime
 
+(Refresh rate calculated from hot loop time)
+
 ## Benchmarks
 
 ### Execution Time (all versions)
 
 | Version  | Hot Loop Time | Executable Lifetime | Steps / Second (Hz) |
 |:--------:|:-------------:|:-------------------:|:-------------------:|
+| [v0.1.6] |    5.64 s     |       5.90 s        |      177.35 Hz      |
 | [v0.1.5] |    5.58 s     |       5.84 s        |      179.24 Hz      |
 | [v0.1.4] |    5.73 s     |       6.03 s        |      174.62 Hz      |
 | [v0.1.3] |    5.62 s     |       5.95 s        |      177.82 Hz      |
@@ -34,6 +37,7 @@ Execution: Each version is run 5 times, dropping the highest and lowest anomalie
 | [v0.1.1] |    12.45 s    |       12.72 s       |      80.34 Hz       |
 | [v0.1.0] |    12.38 s    |       12.67 s       |      80.78 Hz       |
 
+[v0.1.6]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.5...v0.1.6
 [v0.1.5]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.4...v0.1.5
 [v0.1.4]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.3...v0.1.4
 [v0.1.3]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.2...v0.1.3
