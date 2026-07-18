@@ -20,7 +20,7 @@ To compile and run this project, you will need:
 ## Build Guidelines
 
 ### 1. Configuration (Pre-build)
-Currently, simulation parameters are configured directly within `main.cu`. Before compiling, open `main.cu` and modify the `SceneDescription` struct to suit your requirements:
+Currently, simulation parameters are configured directly within `main.cu`. Before compiling, open `main.cu` and modify the `SceneDescription` and `SceneSettings` structs to suit your requirements:
 
 ```cpp
     SceneSettings scene_settings {
