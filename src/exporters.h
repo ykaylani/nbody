@@ -11,7 +11,7 @@
 struct Exporter {
 
     virtual void Initialize() = 0;
-    virtual void Export(const float3* positions, const float3* velocities, const float* masses, uint32_t body_count, uint32_t step, float dt, bool equal_mass) = 0;
+    virtual void Export(const float3* positions, const float3* velocities, const float* masses, uint32_t body_count, uint32_t step, float dt) = 0;
     virtual void Finalize() = 0;
 
     virtual ~Exporter() = default;
@@ -37,11 +37,10 @@ namespace Exporters {
             outfile_ << "Time,ID,PosX,PosY,PosZ,VelX,VelY,VelZ\n";
         }
 
-        void Export(const float3* positions, const float3* velocities, const float* masses, uint32_t body_count, uint32_t step, float dt, bool equal_mass) override {
+        void Export(const float3* positions, const float3* velocities, const float* masses, uint32_t body_count, uint32_t step, float dt) override {
 
             for (int i = 0; i < body_count; i++) {
-                if (equal_mass) {
-                    outfile_ << step * dt << ","
+                outfile_ << step * dt << ","
                     << i << ","
                     << positions[i].x << ","
                     << positions[i].y << ","
@@ -49,18 +48,7 @@ namespace Exporters {
                     << velocities[i].x << ","
                     << velocities[i].y << ","
                     << velocities[i].z << ","
-                    << masses[0] << "\n";
-                } else {
-                    outfile_ << step * dt << ","
-                        << i << ","
-                        << positions[i].x << ","
-                        << positions[i].y << ","
-                        << positions[i].z << ","
-                        << velocities[i].x << ","
-                        << velocities[i].y << ","
-                        << velocities[i].z << ","
-                        << masses[i] << "\n";
-                }
+                    << masses[i] << "\n";
             }
         }
 
@@ -103,24 +91,15 @@ namespace Exporters {
             )";
         }
 
-        void Export(const float3* positions, const float3* velocities, const float* masses, uint32_t body_count, uint32_t step, float dt, bool equal_mass) override {
+        void Export(const float3* positions, const float3* velocities, const float* masses, uint32_t body_count, uint32_t step, float dt) override {
             size_t vec_bytes = body_count * 3 * sizeof(float);
             size_t scalar_bytes = body_count * sizeof(float);
-
-            const float* mass_ptr = masses;
-
-            if (equal_mass) {
-
-                if (mass_broadcast_.size() != body_count) { mass_broadcast_.resize(body_count); }
-                std::fill(mass_broadcast_.begin(), mass_broadcast_.end(), masses[0]);
-                mass_ptr = mass_broadcast_.data();
-            }
 
             size_t step_start_offset = static_cast<size_t>(bin_file_.tellp());
 
             bin_file_.write(reinterpret_cast<const char*>(positions), vec_bytes);
             bin_file_.write(reinterpret_cast<const char*>(velocities), vec_bytes);
-            bin_file_.write(reinterpret_cast<const char*>(mass_ptr), scalar_bytes);
+            bin_file_.write(reinterpret_cast<const char*>(masses), scalar_bytes);
             bin_file_.flush();
 
             size_t pos_offset  = step_start_offset;
@@ -190,18 +169,10 @@ namespace Exporters {
                          )";
         }
 
-        void Export(const float3* positions, const float3* velocities, const float* masses, uint32_t body_count, uint32_t step, float dt, bool equal_mass) override {
+        void Export(const float3* positions, const float3* velocities, const float* masses, uint32_t body_count, uint32_t step, float dt) override {
 
             uint32_t vec_bytes = body_count * 3 * sizeof(float);
             uint32_t scalar_bytes = body_count * sizeof(float);
-
-            const float* mass_ptr = masses;
-
-            if (equal_mass) {
-                if (mass_broadcast_.size() != body_count) { mass_broadcast_.resize(body_count); }
-                std::fill(mass_broadcast_.begin(), mass_broadcast_.end(), masses[0]);
-                mass_ptr = mass_broadcast_.data();
-            }
 
             std::string step_name = outfile_name_.stem().string() + "_" + std::to_string(step) + ".vtp";
             std::filesystem::path full_step_path = outpath_ / step_name;
@@ -236,7 +207,7 @@ namespace Exporters {
             step_file.write(reinterpret_cast<const char*>(velocities), vec_bytes);
 
             step_file.write(reinterpret_cast<const char*>(&scalar_bytes), sizeof(uint32_t));
-            step_file.write(reinterpret_cast<const char*>(mass_ptr), scalar_bytes);
+            step_file.write(reinterpret_cast<const char*>(masses), scalar_bytes);
 
             step_file << "\n  </AppendedData>\n</VTKFile>\n";
             step_file.close();

@@ -9,21 +9,20 @@
 #include "src/distributions.h"
 #include "src/exporters.h"
 
-__global__ void Run(float3* positions_src, float3* velocities_src, float3* positions_dst, float3* velocities_dst, const float* __restrict__ masses, const uint32_t bodyCount, const float dt, const uint32_t step, const float softening, const bool equalMass);
+__global__ void Run(float3* positions_src, float3* velocities_src, float3* positions_dst, float3* velocities_dst, const float* __restrict__ masses, const uint32_t bodyCount, const float dt, const float softening);
 
 int main() {
     std::cout << "Initializing" << std::endl;
 
     SceneDescription scene_desc {
-        .distribution_ = std::make_unique<Distributions::RandomCube>(15000.0f),
-        .exporter_ = nullptr, //std::make_unique<Exporters::VTP>(".", "simulation_data"),
+        .distribution_ = std::make_unique<Distributions::Plummer>(15000.0f, 2800.0f),
+        .exporter_ = std::make_unique<Exporters::XDMF>("D:/env/empi/NBodyData/18_7_26/1", "simulation_data", "simulation_data_org"),
 
         .body_count_ = 45000,
         .steps_ = 1000,
         .dt_ = 0.02f,
         .softening_ = 4.0f,
 
-        .equal_mass_ = true,
         .cuda_err_ = false,
     };
 
@@ -31,16 +30,14 @@ int main() {
     uint32_t blocks_grid = (scene_desc.body_count_ + block_threads - 1) / block_threads;
     size_t shared_memory_bytes = block_threads * (sizeof(float3) + sizeof(float));
 
-    BodyData body_data { scene_desc.body_count_, scene_desc.equal_mass_ };
-    scene_desc.distribution_->ApplyPositions(body_data.positions_1_, scene_desc.body_count_);
-    scene_desc.distribution_->ApplyVelocities(body_data.velocities_1_, scene_desc.body_count_);
-    scene_desc.distribution_->ApplyMasses(body_data.masses_, scene_desc.body_count_, 5e17f, scene_desc.equal_mass_);
+    BodyData body_data { scene_desc.body_count_ };
+    scene_desc.distribution_->Apply(body_data.positions_1_, body_data.velocities_1_, body_data.masses_, 1e17f, scene_desc.body_count_);
 
     const bool save_data = scene_desc.exporter_ != nullptr;
 
     if (save_data) {
         scene_desc.exporter_->Initialize();
-        scene_desc.exporter_->Export(body_data.positions_1_, body_data.velocities_1_, body_data.masses_, scene_desc.body_count_, 0, scene_desc.dt_, scene_desc.equal_mass_);
+        scene_desc.exporter_->Export(body_data.positions_1_, body_data.velocities_1_, body_data.masses_, scene_desc.body_count_, 0, scene_desc.dt_);
     }
 
     float3* positions_source = body_data.positions_1_;
@@ -54,7 +51,7 @@ int main() {
     for (int i = 0; i < scene_desc.steps_; i++) {
 
         bool synced = false;
-        Run<<<blocks_grid, block_threads, shared_memory_bytes>>>(positions_source, velocities_source, positions_destination, velocities_destination, body_data.masses_, scene_desc.body_count_, scene_desc.dt_, i, scene_desc.softening_, scene_desc.equal_mass_);
+        Run<<<blocks_grid, block_threads, shared_memory_bytes>>>(positions_source, velocities_source, positions_destination, velocities_destination, body_data.masses_, scene_desc.body_count_, scene_desc.dt_, scene_desc.softening_);
 
         if (scene_desc.cuda_err_) {
             cudaError_t launch_err = cudaGetLastError();
@@ -75,7 +72,7 @@ int main() {
         if (save_data) {
 
             if (!synced) { cudaDeviceSynchronize(); }
-            scene_desc.exporter_->Export(positions_destination, velocities_destination, body_data.masses_, scene_desc.body_count_, i + 1, scene_desc.dt_, scene_desc.equal_mass_);
+            scene_desc.exporter_->Export(positions_destination, velocities_destination, body_data.masses_, scene_desc.body_count_, i + 1, scene_desc.dt_);
         }
 
         std::swap(positions_source, positions_destination);

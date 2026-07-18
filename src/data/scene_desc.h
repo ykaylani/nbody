@@ -13,7 +13,6 @@ struct SceneDescription {
     float dt_;
     float softening_;
 
-    bool equal_mass_;
     bool cuda_err_;
 };
 

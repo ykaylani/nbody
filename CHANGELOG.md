@@ -1,11 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] 2026-07-17
+## [0.1.5] - 2026-07-18
 ### Added
-- VTP Data Export
+- VTP data export functionality
+- RandomSphere distribution
+- Plummer sphere distribution
 ### Changed
-- Reworked ping-pong buffers and `cudaDeviceSynchronize()` calls for efficiency
+- Reworked ping-pong buffers and `cudaDeviceSynchronize()` calls to improve efficiency
+- Simplified data movement in force kernel `Run()`
+### Removed
+- `equal_mass_` flag removed (negligible gain for too much code complexity)
 
 ## [0.1.4] - 2026-07-17
 ### Added
@@ -50,6 +55,8 @@ All notable changes to this project will be documented in this file.
 - Performance benchmarking via `std::chrono`
 - Memory usage tracking via `GetProcessMemoryInfo()`
 
+
+[0.1.5]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.4..v0.1.5
 [0.1.4]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.3...v0.1.4
 [0.1.3]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.2...v0.1.3
 [0.1.2]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.1...v0.1.2

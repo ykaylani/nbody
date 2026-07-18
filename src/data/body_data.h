@@ -3,7 +3,7 @@
 
 #include <cuda_runtime.h>
 
-struct BodyData { // when step is even, output is buffers (two). buffers (one) are output+ when step is odd.
+struct BodyData { // when step is even, output is buffers (two). buffers (one) are output when step is odd.
     float3* positions_1_ = nullptr;
     float3* velocities_1_ = nullptr;
 
@@ -12,15 +12,14 @@ struct BodyData { // when step is even, output is buffers (two). buffers (one) a
 
     float* masses_ = nullptr;
 
-    BodyData(uint32_t nCount, bool equalMass) {
+    BodyData(uint32_t nCount) {
         cudaMallocManaged(&positions_1_, sizeof(float3) * nCount);
         cudaMallocManaged(&velocities_1_, sizeof(float3) * nCount);
 
         cudaMallocManaged(&positions_2_, sizeof(float3) * nCount);
         cudaMallocManaged(&velocities_2_, sizeof(float3) * nCount);
 
-        if (equalMass) { cudaMallocManaged(&masses_, sizeof(float)); }
-        else { cudaMallocManaged(&masses_, sizeof(float) * nCount); }
+        cudaMallocManaged(&masses_, sizeof(float) * nCount);
     }
 
     ~BodyData() {
