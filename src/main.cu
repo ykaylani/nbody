@@ -2,11 +2,11 @@
 #include <format>
 #include <iostream>
 
-#include "src/data/body_data.h"
-#include "src/data/scene_desc.h"
+#include "data/body_data.h"
+#include "data/scene_desc.h"
 
-#include "src/strats/distributions.h"
-#include "src/strats/exporters.h"
+#include "strats/distributions.h"
+#include "strats/exporters.h"
 
 int main() {
     std::cout << "Initializing" << std::endl;
@@ -48,7 +48,7 @@ int main() {
             scene_description.exporter->Export(body_data.positions_1, body_data.velocities_1, body_data.masses, i + 1, scene_settings.dt);
         }
     }
-    
+
     cudaDeviceSynchronize();
     if (save_data) { scene_description.exporter->Finalize(); }
 
