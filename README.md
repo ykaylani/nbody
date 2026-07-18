@@ -32,8 +32,7 @@ SceneDescription scene_desc {
     .dt_ = 0.02f, // physical change in time per step
     .softening_ = 4.0f, // softening for collisionless systems
 
-    .equal_mass_ = true, // Flag that enables memory optimizations when all bodies have equal mass
-    .cuda_err_ = false, // Flag for CUDA error checking (decreases performance)
+    .cuda_err_ = false, // Flag for CUDA error checking (decreases performance when enabled)
 };
 ```
 
