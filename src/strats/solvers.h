@@ -3,11 +3,15 @@
 
 #include <chrono>
 #include <iostream>
+#include <thrust/sort.h>
 
 #include "../data/body_data.h"
 #include "../data/scene_settings.h"
 
 #include "../cuda_solvers/all_pairs.cuh"
+#include "../cuda_solvers/barnes_hut.cuh"
+
+constexpr uint16_t block_threads = 256;
 
 struct Solver {
     SceneSettings scene_settings;
@@ -54,7 +58,6 @@ namespace Solvers {
 
             int body_count = scene_settings.body_count;
 
-            uint16_t block_threads = 256;
             uint32_t blocks_grid = (body_count + block_threads - 1) / block_threads;
             size_t shared_memory_bytes = block_threads * (sizeof(float3) + sizeof(float));
 
@@ -73,6 +76,40 @@ namespace Solvers {
         }
 
         using Solver::Solver;
+    };
+
+    struct BarnesHut : Solver {
+        BarnesHutInterData inter_data;
+
+        void Solve(BodyData& body_data, float dt) override {
+
+            uint32_t body_count = scene_settings.body_count;
+            uint32_t blocks_grid = (body_count + block_threads - 1) / block_threads;
+
+            EncodeF3A<<<blocks_grid, block_threads>>>(
+                body_data.positions_1,
+                inter_data.encodings,
+                body_count);
+
+            thrust::sequence(
+                thrust::device,
+                inter_data.sorted_to_original,
+                inter_data.sorted_to_original + body_count);
+
+            thrust::sort_by_key(
+                thrust::device,
+                inter_data.encodings,
+                inter_data.encodings + body_count,
+                inter_data.sorted_to_original);
+
+            BuildKarrasTrie(
+                inter_data.encodings,
+                inter_data.bintrie_internals,
+                inter_data.leaf_parents,
+                body_count);
+        }
+
+        BarnesHut(const SceneSettings& settings) : Solver(settings), inter_data(scene_settings.body_count) {}
     };
 }
 

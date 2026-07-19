@@ -4,7 +4,9 @@ project(nbody CUDA)
 set(CMAKE_CUDA_STANDARD 20)
 
 add_executable(nbody src/main.cu
-        src/cuda_solvers/all_pairs.cu)
+        src/cuda_solvers/all_pairs/all_pairs.cu
+        src/cuda_solvers/barnes_hut/z_order.cu
+        src/cuda_solvers/barnes_hut/karras.cu)
 
 set_target_properties(nbody PROPERTIES
         CUDA_SEPARABLE_COMPILATION ON

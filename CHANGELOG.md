@@ -1,14 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.1.6] - 2026-07-18
+> **Versioning Note:** On 2026-07-19, historical tags `v0.1.3` through `v0.1.6` were retroactively updated to `v0.2.0` through `v0.4.0`. This was done to properly align with Semantic Versioning, as those releases contained breaking changes to the public API and data semantics.
+
+## [Unreleased]
+### Added
+- Barnes-Hut Solver Strategy
+
+## [0.4.0] - 2026-07-18
 ### Added
 - Framework for solver strategies (All Pairs, Barnes-Hut, etc.)
 ### Changed
 - `SceneDescription` structure separated into `SceneDescription` and `SceneSettings` structures
 - Changed name `Run()` of all-pairs kernel to `AllPairsKernel()` and added header file
 
-## [0.1.5] - 2026-07-18
+## [0.3.0] - 2026-07-18
 ### Added
 - VTP data export functionality
 - RandomSphere distribution
@@ -19,13 +25,13 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - `equal_mass_` flag removed (negligible gain for too much code complexity)
 
-## [0.1.4] - 2026-07-17
+## [0.2.1] - 2026-07-17
 ### Added
 - `#pragma unroll` in kernel loops
 - Framework for data export formats
 - XDMF data export
 
-## [0.1.3] - 2026-07-17
+## [0.2.0] - 2026-07-17
 ### Changed
 - Use of mass instead of inverse mass to reduce divisions in hot loop
 - Reworked initial condition distribution to be more readable
@@ -62,10 +68,11 @@ All notable changes to this project will be documented in this file.
 - Performance benchmarking via `std::chrono`
 - Memory usage tracking via `GetProcessMemoryInfo()`
 
-[0.1.6]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.5...v0.1.6
-[0.1.5]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.4...v0.1.5
-[0.1.4]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.3...v0.1.4
-[0.1.3]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.2...v0.1.3
+[Unreleased]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.0...HEAD
+[0.4.0]: https://gitlab.com/yks4892825/nbody/-/compare/v0.3.0...v0.4.0
+[0.3.0]: https://gitlab.com/yks4892825/nbody/-/compare/v0.2.1...v0.3.0
+[0.2.1]: https://gitlab.com/yks4892825/nbody/-/compare/v0.2.0...v0.2.1
+[0.2.0]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.2...v0.2.0
 [0.1.2]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.1...v0.1.2
 [0.1.1]: https://gitlab.com/yks4892825/nbody/-/compare/v0.1.0...v0.1.1
 [0.1.0]: https://gitlab.com/yks4892825/nbody/-/tags/v0.1.0
