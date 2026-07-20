@@ -74,4 +74,4 @@ To run the simulation:
 - This project is licensed using the [MIT License](LICENSE).
 
 [v0.4.0 (Latest)]: https://gitlab.com/yks4892825/nbody/-/compare/v0.3.0...v0.4.0
-[NVIDIA Sample]: (https://github.com/NVIDIA/cuda-samples/tree/master/cpp/5_Domain_Specific/nbody)
+[NVIDIA Sample]: https://github.com/NVIDIA/cuda-samples/tree/master/cpp/5_Domain_Specific/nbody
