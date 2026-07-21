@@ -4,8 +4,8 @@ A GPU-accelerated N-Body simulation written in C++ and CUDA.
 
 ## Features
 * **GPU-Accelerated Compute:** Physics calculations are offloaded to the GPU using CUDA.
-* **Modular Architecture:** Built using modern C++20 and the Strategy pattern, allowing you to swap out core components:
-    * **Solvers:** Pluggable propagation algorithms (e.g., `Solvers::AllPairs`).
+* **Modular Architecture:** Built using the Strategy pattern, allowing you to swap out core components:
+    * **Solvers:** Pluggable propagation algorithms (e.g., `Solvers::AllPairs`). 
     * **Distributions:** Customizable initial condition generators (e.g., `Distributions::RandomCube`).
     * **Exporters:** Flexible data output handlers.
 * **Multiple Export Formats:** Export simulation data in **XDMF**, **VTP**, or **CSV** formats.

@@ -2,8 +2,9 @@
 #define NBODY_BODY_DATA_H
 
 #include <cuda_runtime.h>
+#include <cuda/__atomic/atomic.h>
 
-#include "cuda_solvers/barnes_hut/bintrie_nodes.h"
+#include "cuda_solvers/barnes_hut/radtree_nodes.h"
 
 struct BodyData {
     float3* positions_1 = nullptr;
@@ -41,23 +42,32 @@ struct BodyData {
 struct BarnesHutInterData {
     uint64_t* encodings = nullptr;
 
-    uint32_t* leaf_parents = nullptr;
+    int32_t* leaf_parents = nullptr;
     uint32_t* sorted_to_original = nullptr;
 
-    BintrieInternal* bintrie_internals = nullptr;
+    RadixTreeInternal* bintrie_internals = nullptr;
     float3* node_coms = nullptr;
     float* node_masses = nullptr;
 
+    float3* node_bounds_min = nullptr;
+    float3* node_bounds_max = nullptr;
+    cuda::atomic<int32_t, cuda::thread_scope_device>* node_flags = nullptr;
+
     BarnesHutInterData(uint32_t n_count) {
+
         cudaMallocManaged(&encodings, sizeof(uint64_t) * n_count);
-        cudaMallocManaged(&leaf_parents, sizeof(uint32_t) * n_count);
+        cudaMallocManaged(&leaf_parents, sizeof(int32_t) * n_count);
         cudaMallocManaged(&sorted_to_original, sizeof(uint32_t) * n_count);
 
         uint32_t internal_count = n_count - 1;
 
-        cudaMallocManaged(&bintrie_internals, sizeof(BintrieInternal) * internal_count);
+        cudaMallocManaged(&bintrie_internals, sizeof(RadixTreeInternal) * internal_count);
         cudaMallocManaged(&node_coms, sizeof(float3) * internal_count);
         cudaMallocManaged(&node_masses, sizeof(float) * internal_count);
+
+        cudaMallocManaged(&node_bounds_min, sizeof(float3) * internal_count);
+        cudaMallocManaged(&node_bounds_max, sizeof(float3) * internal_count);
+        cudaMallocManaged(&node_flags, sizeof(int32_t) * internal_count);
     }
 
     ~BarnesHutInterData() {
@@ -68,6 +78,10 @@ struct BarnesHutInterData {
         cudaFree(bintrie_internals);
         cudaFree(node_coms);
         cudaFree(node_masses);
+
+        cudaFree(node_bounds_min);
+        cudaFree(node_bounds_max);
+        cudaFree(node_flags);
     }
 };
 

@@ -18,6 +18,8 @@ struct Solver {
 
     virtual void Propagate(BodyData& body_data, float dt) {
 
+        bool synced = false;
+
         std::chrono::steady_clock::time_point begin_hotloop;
         if (scene_settings.hotloop_time) begin_hotloop = std::chrono::steady_clock::now();
 
@@ -31,6 +33,7 @@ struct Solver {
             }
 
             cudaError_t sync_err = cudaDeviceSynchronize();
+            synced = true;
             if (sync_err != cudaSuccess) {
                 std::cerr << "Kernel execution failed: " << cudaGetErrorString(sync_err) << std::endl;
                 return;
@@ -38,6 +41,7 @@ struct Solver {
         }
 
         if (scene_settings.hotloop_time) {
+            if (!synced) cudaDeviceSynchronize();
             std::chrono::steady_clock::time_point end_hotloop = std::chrono::steady_clock::now();
             std::cout << "Execute time = " << std::chrono::duration_cast<std::chrono::microseconds>(end_hotloop - begin_hotloop).count() << " μs" << std::endl;
         }
@@ -80,9 +84,9 @@ namespace Solvers {
 
     struct BarnesHut : Solver {
         BarnesHutInterData inter_data;
+        float opening_angle_criterion;
 
         void Solve(BodyData& body_data, float dt) override {
-
             uint32_t body_count = scene_settings.body_count;
             uint32_t blocks_grid = (body_count + block_threads - 1) / block_threads;
 
@@ -102,14 +106,49 @@ namespace Solvers {
                 inter_data.encodings + body_count,
                 inter_data.sorted_to_original);
 
-            BuildKarrasTrie(
+            BuildKarrasTrie<<<blocks_grid, block_threads>>>(
                 inter_data.encodings,
                 inter_data.bintrie_internals,
                 inter_data.leaf_parents,
                 body_count);
+
+            cudaMemsetAsync(inter_data.node_flags, 0, sizeof(int32_t) * (body_count - 1));
+
+            CalculateCOMs<<<blocks_grid, block_threads>>>(
+                inter_data.bintrie_internals,
+                inter_data.node_flags,
+                inter_data.node_coms,
+                inter_data.node_masses,
+                inter_data.node_bounds_min,
+                inter_data.node_bounds_max,
+                inter_data.sorted_to_original,
+                inter_data.leaf_parents,
+                body_data.positions_1,
+                body_data.masses,
+                body_count);
+
+            CalculateForces<<<blocks_grid, block_threads>>>(
+                body_data.positions_1,
+                body_data.velocities_1,
+                body_data.positions_2,
+                body_data.velocities_2,
+                body_data.masses,
+                inter_data.bintrie_internals,
+                inter_data.node_masses,
+                inter_data.node_coms,
+                inter_data.node_bounds_min,
+                inter_data.node_bounds_max,
+                inter_data.sorted_to_original,
+                opening_angle_criterion,
+                scene_settings.softening,
+                scene_settings.dt,
+                body_count);
+
+            std::swap(body_data.positions_1, body_data.positions_2);
+            std::swap(body_data.velocities_1, body_data.velocities_2);
         }
 
-        BarnesHut(const SceneSettings& settings) : Solver(settings), inter_data(scene_settings.body_count) {}
+        BarnesHut(const SceneSettings& settings, float opening_angle_criterion) : Solver(settings), inter_data(scene_settings.body_count), opening_angle_criterion(opening_angle_criterion) {}
     };
 }
 

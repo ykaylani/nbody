@@ -12,8 +12,8 @@ int main() {
     std::cout << "Initializing" << std::endl;
 
     SceneSettings scene_settings {
-        .body_count = 45000,
-        .steps = 1000,
+        .body_count = 100000,
+        .steps = 10,
         .dt = 0.02,
         .softening = 4.0f,
 
@@ -23,8 +23,8 @@ int main() {
 
     SceneDescription scene_description {
         .solver = std::make_unique<Solvers::AllPairs>(scene_settings),
-        .distribution = std::make_unique<Distributions::RandomCube>(scene_settings, 15000.0f),
-        .exporter = std::make_unique<Exporters::XDMF>(scene_settings, ".", "simulation_data", "simulation_data_org"),
+        .distribution = std::make_unique<Distributions::Plummer>(scene_settings, 40000.0f, 4000.0f),
+        .exporter = nullptr, //std::make_unique<Exporters::XDMF>(scene_settings, ".", "simulation_data", "simulation_data_org"),
     };
 
     BodyData body_data { scene_settings.body_count };

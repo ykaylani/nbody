@@ -1,4 +1,4 @@
-#include "bintrie_nodes.h"
+#include "radtree_nodes.h"
 
 __device__ inline int32_t LongestCommonPrefix(int32_t i, int32_t j, const uint64_t* codes, int32_t body_count) {
     if (i < 0 || i >= body_count || j < 0 || j >= body_count) return -1;
@@ -10,7 +10,7 @@ __device__ inline int32_t LongestCommonPrefix(int32_t i, int32_t j, const uint64
     return 64 + __clz(i ^ j);
 }
 
-__global__ void BuildKarrasTrie(const uint64_t* __restrict__ codes, BintrieInternal* internal_nodes, uint32_t* leaf_parents, const int32_t body_count) {
+__global__ void BuildKarrasTrie(const uint64_t* __restrict__ codes, RadixTreeInternal* internal_nodes, int32_t* leaf_parents, const int32_t body_count) {
     int32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= body_count - 1) return;
 
