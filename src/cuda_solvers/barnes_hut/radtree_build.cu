@@ -54,6 +54,8 @@ __global__ void BuildKarrasTrie(const uint64_t* __restrict__ codes, RadixTreeInt
 
     internal_nodes[idx].left_child = left_idx;
     internal_nodes[idx].right_child = right_idx;
+    internal_nodes[idx].range_first = min_idx_child;
+    internal_nodes[idx].range_last = max_idx_child;
 
     if (left_idx < 0) {
         leaf_parents[~left_idx] = idx;

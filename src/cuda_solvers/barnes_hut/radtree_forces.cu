@@ -7,6 +7,23 @@ __device__ __forceinline__ bool MultipoleAcceptance(float3 node_bounds_min, floa
     return (edge * dist_inverse < opening_angle_criterion);
 }
 
+__device__ __forceinline__ float3 PairAccelerations(float3 particle_position, float3 other_position, float other_mass, float softening) {
+    float3 displacement = {
+        other_position.x - particle_position.x,
+        other_position.y - particle_position.y,
+        other_position.z - particle_position.z
+    };
+
+    float distance_sqr = displacement.x * displacement.x + displacement.y * displacement.y + displacement.z * displacement.z;
+    float distance_sqr_soft = distance_sqr + softening;
+
+    float inv_dist = rsqrtf(distance_sqr_soft);
+    float inv_dist_cube = inv_dist * inv_dist * inv_dist;
+    float accel_scalar = other_mass * inv_dist_cube;
+
+    return {displacement.x * accel_scalar, displacement.y * accel_scalar, displacement.z * accel_scalar};
+}
+
 __global__ void CalculateForces(
     const float3* __restrict__ positions,
     const float3* __restrict__ velocities,
@@ -22,7 +39,8 @@ __global__ void CalculateForces(
     const float opening_angle_criterion,
     const float softening,
     const float dt,
-    const int32_t num_particles) {
+    const int32_t num_particles,
+    const int32_t leaf_bucket_size) {
 
     int32_t sorted_idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (sorted_idx >= num_particles) return;
@@ -67,31 +85,37 @@ __global__ void CalculateForces(
                 acceleration.x += displacement.x * accel_scalar;
                 acceleration.y += displacement.y * accel_scalar;
                 acceleration.z += displacement.z * accel_scalar;
+
             } else {
 
-                stack[++stack_traverser] = nodes[evaluated].left_child;
-                stack[++stack_traverser] = nodes[evaluated].right_child;
+                RadixTreeInternal node = nodes[evaluated];
+                int32_t range_count = node.range_last - node.range_first + 1;
+
+                if (range_count <= leaf_bucket_size) {
+                    for (int32_t i = node.range_first; i <= node.range_last; i++) {
+                        uint32_t orig = sorted_to_original[i];
+                        if (orig == idx) continue;
+
+                        float3 accel = PairAccelerations(particle_position, positions[orig], masses[orig], softening);
+                        acceleration.x += accel.x;
+                        acceleration.y += accel.y;
+                        acceleration.z += accel.z;
+                    }
+
+                } else {
+                    stack[++stack_traverser] = node.left_child;
+                    stack[++stack_traverser] = node.right_child;
+                }
             }
         } else {
             int32_t leaf_idx = ~evaluated;
             uint32_t orig = sorted_to_original[leaf_idx];
 
             if (orig != idx) {
-                float3 leaf_pos = positions[orig];
-
-                float3 displacement = {leaf_pos.x - particle_position.x,leaf_pos.y - particle_position.y,leaf_pos.z - particle_position.z};
-                float distance_sqr = displacement.x * displacement.x + displacement.y * displacement.y + displacement.z * displacement.z;
-                float distance_sqr_soft = distance_sqr + softening;
-
-                float inv_dist = rsqrtf(distance_sqr_soft);
-                float inv_dist_cube = inv_dist * inv_dist * inv_dist;
-
-                float leaf_mass = masses[orig];
-                float accel_scalar = leaf_mass * inv_dist_cube;
-
-                acceleration.x += displacement.x * accel_scalar;
-                acceleration.y += displacement.y * accel_scalar;
-                acceleration.z += displacement.z * accel_scalar;
+                float3 accel = PairAccelerations(particle_position, positions[orig], masses[orig], softening);
+                acceleration.x += accel.x;
+                acceleration.y += accel.y;
+                acceleration.z += accel.z;
             }
         }
     }

@@ -85,6 +85,7 @@ namespace Solvers {
     struct BarnesHut : Solver {
         BarnesHutInterData inter_data;
         float opening_angle_criterion;
+        int32_t leaf_bucket_size;
 
         void Solve(BodyData& body_data, float dt) override {
             uint32_t body_count = scene_settings.body_count;
@@ -141,14 +142,15 @@ namespace Solvers {
                 inter_data.sorted_to_original,
                 opening_angle_criterion,
                 scene_settings.softening,
-                scene_settings.dt,
-                body_count);
+                dt,
+                body_count,
+                leaf_bucket_size);
 
             std::swap(body_data.positions_1, body_data.positions_2);
             std::swap(body_data.velocities_1, body_data.velocities_2);
         }
 
-        BarnesHut(const SceneSettings& settings, float opening_angle_criterion) : Solver(settings), inter_data(scene_settings.body_count), opening_angle_criterion(opening_angle_criterion) {}
+        BarnesHut(const SceneSettings& settings, float opening_angle_criterion, int32_t leaf_bucket_size = 32) : Solver(settings), inter_data(scene_settings.body_count), opening_angle_criterion(opening_angle_criterion), leaf_bucket_size(leaf_bucket_size) {}
     };
 }
 

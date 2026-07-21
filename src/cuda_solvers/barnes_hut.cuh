@@ -33,6 +33,7 @@ __global__ void CalculateForces(
     float opening_angle_criterion,
     float softening,
     float dt,
-    int32_t num_particles);
+    int32_t num_particles,
+    const int32_t leaf_bucket_size);
 
 #endif //NBODY_BARNES_HUT_H

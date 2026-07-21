@@ -3,7 +3,11 @@ All notable changes to this project will be documented in this file.
 
 > **Versioning Note:** On 2026-07-19, historical tags `v0.1.3` through `v0.1.6` were retroactively updated to `v0.2.0` through `v0.4.0`. This was done to properly align with Semantic Versioning, as those releases contained breaking changes to the public API and data semantics.
 
-## [0.4.1]
+## [0.4.2] - 2026-07-21
+### Added
+- Leaf node bucketing in Barnes-Hut strategy (performance improvement)
+
+## [0.4.1] - 2026-07-21
 ### Added
 - Barnes-Hut Solver Strategy (though it's currently very inefficient)
 
@@ -71,7 +75,8 @@ All notable changes to this project will be documented in this file.
 - Performance benchmarking via `std::chrono`
 - Memory usage tracking via `GetProcessMemoryInfo()`
 
-[0.4.1]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.0...0.4.1
+[0.4.2]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.1...v0.4.2
+[0.4.1]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.0...v0.4.1
 [0.4.0]: https://gitlab.com/yks4892825/nbody/-/compare/v0.3.0...v0.4.0
 [0.3.0]: https://gitlab.com/yks4892825/nbody/-/compare/v0.2.1...v0.3.0
 [0.2.1]: https://gitlab.com/yks4892825/nbody/-/compare/v0.2.0...v0.2.1
