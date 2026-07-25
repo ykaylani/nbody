@@ -14,6 +14,8 @@ To maintain consistency, every version is profiled using the exact same initial 
 
 Execution: Each version is run 5 times, dropping the highest and lowest anomalies, with the average of the remaining 3 runs recorded.
 
+> **Barnes-Hut Clarification:** Starting from `v0.4.1`, benchmarks also track the Barnes-Hut solver alongside the standard All-Pairs solver. The Barnes-Hut metrics are captured using the same 45,000-body Random Cube state, specifically configured with an approximation threshold of $\theta = 0.5$ and a maximum octree depth of $64$. The "against sample" percentage is calculated using the standard All-Pairs performance.
+
 ### Hardware Environment
 - OS: Windows 11
 - CPU: AMD Ryzen 5 5600
@@ -40,16 +42,19 @@ Note: The source code (`nbody.cpp`) was patched prior to compilation to change t
 
 ### Execution Time (all versions)
 
-| Version                     | Hot Loop | Lifetime |    Hz     | against sample |
-|:----------------------------|:---------|:---------|:---------:|:---------------|
-| [NVIDIA CUDA N-Body Sample] | 6.04 s   | 6.30 s   | 165.48 Hz | baseline       |
-| [v0.4.0]                    | 5.64 s   | 5.90 s   | 177.35 Hz | +7.2%          |
-| [v0.3.0]                    | 5.58 s   | 5.84 s   | 179.24 Hz | +8.3%          |
-| [v0.2.1]                    | 5.73 s   | 6.03 s   | 174.62 Hz | +5.5%          |
-| [v0.2.0]                    | 5.62 s   | 5.95 s   | 177.82 Hz | +7.5%          |
-| [v0.1.2]                    | 7.67 s   | 8.00 s   | 130.33 Hz | −21.2%         |
-| [v0.1.1]                    | 12.45 s  | 12.72 s  | 80.34 Hz  | −51.4%         |
-| [v0.1.0]                    | 12.38 s  | 12.67 s  | 80.78 Hz  | −51.2%         |
+| Version                     | AP Hot Loop | BH Hot Loop | Lifetime |   AP Hz   |   BH Hz   | against sample |
+|:----------------------------|:------------|:------------|:---------|:---------:|:---------:|:---------------|
+| [NVIDIA CUDA N-Body Sample] | 6.04 s      | N/A         | 6.30 s   | 165.48 Hz | N/A       | baseline       |
+| [v0.4.3]                    | 5.84 s      | 8.35 s      | 6.08 s   | 171.32 Hz | 119.82 Hz | +3.5%          |
+| [v0.4.2]                    | 5.90 s      | 24.35 s     | 6.14 s   | 169.46 Hz | 41.06 Hz  | +2.4%          |
+| [v0.4.1]                    | 5.86 s      | 99.45 s     | 6.09 s   | 170.79 Hz | 10.06 Hz  | +3.2%          |
+| [v0.4.0]                    | 5.64 s      | N/A         | 5.90 s   | 177.35 Hz | N/A       | +7.2%          |
+| [v0.3.0]                    | 5.58 s      | N/A         | 5.84 s   | 179.24 Hz | N/A       | +8.3%          |
+| [v0.2.1]                    | 5.73 s      | N/A         | 6.03 s   | 174.62 Hz | N/A       | +5.5%          |
+| [v0.2.0]                    | 5.62 s      | N/A         | 5.95 s   | 177.82 Hz | N/A       | +7.5%          |
+| [v0.1.2]                    | 7.67 s      | N/A         | 8.00 s   | 130.33 Hz | N/A       | −21.2%         |
+| [v0.1.1]                    | 12.45 s     | N/A         | 12.72 s  | 80.34 Hz  | N/A       | −51.4%         |
+| [v0.1.0]                    | 12.38 s     | N/A         | 12.67 s  | 80.78 Hz  | N/A       | −51.2%         |
 
 [NVIDIA CUDA N-Body Sample]: https://github.com/NVIDIA/cuda-samples/tree/master/cpp/5_Domain_Specific/nbody
 [v0.4.0]: https://gitlab.com/yks4892825/nbody/-/compare/v0.3.0...v0.4.0
