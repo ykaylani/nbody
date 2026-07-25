@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [0.4.3] 2026-07-25
+## [0.4.3] - 2026-07-25
 ### Fixed
 - Reduced warp divergence in Barnes-Hut kernel
 - Streamlined memory access in Barnes-Hut kernel
@@ -85,6 +85,7 @@ All notable changes to this project will be documented in this file.
 - Performance benchmarking via `std::chrono`
 - Memory usage tracking via `GetProcessMemoryInfo()`
 
+[0.4.3]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.2...v0.4.3
 [0.4.2]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.1...v0.4.2
 [0.4.1]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.0...v0.4.1
 [0.4.0]: https://gitlab.com/yks4892825/nbody/-/compare/v0.3.0...v0.4.0
