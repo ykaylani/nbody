@@ -4,7 +4,7 @@
 #include <cuda_runtime.h>
 #include <cuda/__atomic/atomic.h>
 
-#include "cuda_solvers/barnes_hut/radtree_nodes.h"
+#include "../cuda_solvers/barnes_hut/radtree_nodes.h"
 
 struct BodyData {
     float3* positions_1 = nullptr;
@@ -53,11 +53,23 @@ struct BarnesHutInterData {
     float3* node_bounds_max = nullptr;
     cuda::atomic<int32_t, cuda::thread_scope_device>* node_flags = nullptr;
 
+    float3* scratch_positions_sorted = nullptr;
+    float3* scratch_velocities_sorted = nullptr;
+    float* scratch_masses_sorted = nullptr;
+    float3* scratch_positions_dst_sorted = nullptr;
+    float3* scratch_velocities_dst_sorted = nullptr;
+
     BarnesHutInterData(uint32_t n_count) {
 
         cudaMallocManaged(&encodings, sizeof(uint64_t) * n_count);
         cudaMallocManaged(&leaf_parents, sizeof(int32_t) * n_count);
         cudaMallocManaged(&sorted_to_original, sizeof(uint32_t) * n_count);
+
+        cudaMallocManaged(&scratch_positions_sorted, sizeof(float3) * n_count);
+        cudaMallocManaged(&scratch_velocities_sorted, sizeof(float3) * n_count);
+        cudaMallocManaged(&scratch_masses_sorted, sizeof(float) * n_count);
+        cudaMallocManaged(&scratch_positions_dst_sorted, sizeof(float3) * n_count);
+        cudaMallocManaged(&scratch_velocities_dst_sorted, sizeof(float3) * n_count);
 
         uint32_t internal_count = n_count - 1;
 
@@ -74,6 +86,12 @@ struct BarnesHutInterData {
         cudaFree(encodings);
         cudaFree(leaf_parents);
         cudaFree(sorted_to_original);
+
+        cudaFree(scratch_positions_sorted);
+        cudaFree(scratch_velocities_sorted);
+        cudaFree(scratch_masses_sorted);
+        cudaFree(scratch_positions_dst_sorted);
+        cudaFree(scratch_velocities_dst_sorted);
 
         cudaFree(bintrie_internals);
         cudaFree(node_coms);

@@ -18,7 +18,7 @@ __global__ void CalculateCOMs(
     const float* __restrict__ masses,
     const uint32_t body_count);
 
-__global__ void CalculateForces(
+void CalculateForces(
     const float3* __restrict__ positions,
     const float3* __restrict__ velocities,
     float3* positions_dst,
@@ -30,10 +30,17 @@ __global__ void CalculateForces(
     const float3* __restrict__ node_bounds_min,
     const float3* __restrict__ node_bounds_max,
     const uint32_t* __restrict__ sorted_to_original,
+    float3* scratch_positions_sorted,
+    float3* scratch_velocities_sorted,
+    float* scratch_masses_sorted,
+    float3* scratch_positions_dst_sorted,
+    float3* scratch_velocities_dst_sorted,
     float opening_angle_criterion,
     float softening,
     float dt,
     int32_t num_particles,
-    const int32_t leaf_bucket_size);
+    const int32_t leaf_bucket_size,
+    int32_t threads_per_block = 128,
+    cudaStream_t stream = 0);
 
 #endif //NBODY_BARNES_HUT_H

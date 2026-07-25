@@ -18,6 +18,5 @@ set_target_properties(nbody PROPERTIES
 
 target_compile_options(nbody PRIVATE
         $<$<COMPILE_LANGUAGE:CUDA>:--use_fast_math>
-        $<$<COMPILE_LANGUAGE:CXX>:/Zc:preprocessor>
-        $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=/Zc:preprocessor>
+        $<$<AND:$<COMPILE_LANGUAGE:CUDA>,$<PLATFORM_ID:Windows>>:-Xcompiler=/Zc:preprocessor>
 )

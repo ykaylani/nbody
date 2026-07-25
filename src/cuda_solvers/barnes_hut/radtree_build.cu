@@ -1,3 +1,5 @@
+#include <cuda/std/cstdint>
+
 #include "radtree_nodes.h"
 
 __device__ inline int32_t LongestCommonPrefix(int32_t i, int32_t j, const uint64_t* codes, int32_t body_count) {

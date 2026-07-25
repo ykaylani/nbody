@@ -1,3 +1,4 @@
+#include <cuda/std/cstdint>
 constexpr float c_max_bound = 1048576.0f;
 constexpr float c_min_bound = -1048576.0f;
 constexpr float c_scale_denominator_inv = 1 / (c_max_bound - c_min_bound);

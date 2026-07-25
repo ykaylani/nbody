@@ -1,5 +1,4 @@
 #include <chrono>
-#include <format>
 #include <iostream>
 
 #include "data/body_data.h"
@@ -12,7 +11,7 @@ int main() {
     std::cout << "Initializing" << std::endl;
 
     SceneSettings scene_settings {
-        .body_count = 500000,
+        .body_count = 100000,
         .steps = 10,
         .dt = 0.02,
         .softening = 4.0f,
@@ -22,7 +21,7 @@ int main() {
     };
 
     SceneDescription scene_description {
-        .solver = std::make_unique<Solvers::BarnesHut>(scene_settings, 0.5, 64),
+        .solver = std::make_unique<Solvers::BarnesHut>(scene_settings, 0.5f, 64),
         .distribution = std::make_unique<Distributions::Plummer>(scene_settings, 200000.0f, 20000.0f),
         .exporter = nullptr //std::make_unique<Exporters::XDMF>(scene_settings, ".", "simulation_data", "simulation_data_org"),
     };

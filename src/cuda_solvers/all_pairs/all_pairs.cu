@@ -1,3 +1,4 @@
+#include <cuda/std/cstdint>
 static __constant__ float c_gravitational = 6.6743e-11;
 
 __global__ void AllPairsKernel(float3* positions_src,

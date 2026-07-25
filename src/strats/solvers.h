@@ -128,7 +128,7 @@ namespace Solvers {
                 body_data.masses,
                 body_count);
 
-            CalculateForces<<<blocks_grid, block_threads>>>(
+            CalculateForces(
                 body_data.positions_1,
                 body_data.velocities_1,
                 body_data.positions_2,
@@ -140,6 +140,11 @@ namespace Solvers {
                 inter_data.node_bounds_min,
                 inter_data.node_bounds_max,
                 inter_data.sorted_to_original,
+                inter_data.scratch_positions_sorted,
+                inter_data.scratch_velocities_sorted,
+                inter_data.scratch_masses_sorted,
+                inter_data.scratch_positions_dst_sorted,
+                inter_data.scratch_velocities_dst_sorted,
                 opening_angle_criterion,
                 scene_settings.softening,
                 dt,
