@@ -14,7 +14,7 @@ A GPU-accelerated N-Body simulation written in C++ and CUDA.
 
 |      Version      | Hot Loop Time  | Speed vs. Sample |
 |:-----------------:|:--------------:|:----------------:|
-| [v0.4.0 (Latest)] |     5.64 s     |   7.2% faster    |
+| [v0.4.0 (Latest Rel.)] |     5.64 s     |   7.2% faster    |
 |  [NVIDIA Sample]  |     6.04 s     |     Baseline     |
 
 *Measured at 45,000 bodies over 1000 steps on an RTX 4060. For complete methodology, hardware specifications, and historical version data, see [BENCHMARKS.md](BENCHMARKS.md).*
@@ -73,5 +73,5 @@ To run the simulation:
 - The entire update history of this project will be stored in the [Changelog](CHANGELOG.md).
 - This project is licensed using the [MIT License](LICENSE).
 
-[v0.4.0 (Latest)]: https://gitlab.com/yks4892825/nbody/-/compare/v0.3.0...v0.4.0
+[v0.4.0 (Latest Rel.)]: https://gitlab.com/yks4892825/nbody/-/compare/v0.3.0...v0.4.0
 [NVIDIA Sample]: https://github.com/NVIDIA/cuda-samples/tree/master/cpp/5_Domain_Specific/nbody
