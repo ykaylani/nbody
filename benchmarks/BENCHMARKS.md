@@ -1,36 +1,51 @@
 # Performance Benchmarks
 
-All notable performance benchmarks are documented here. For details on the hardware environment, simulation parameters, and how these metrics are captured, please read the [Benchmark Methodology](BENCHMARKS_SPEC.md).
+All notable performance benchmarks are documented here. For details on the hardware environment, simulation parameters, and how these metrics are captured, see the [Benchmark Methodology](BENCHMARKS_SPEC.md).
 
-> **Versioning Note:** On 2026-07-19, historical tags `v0.1.3` through `v0.1.6` were retroactively updated to `v0.2.0` through `v0.4.0` to align with SemVer. Some older commit messages may still reference the original `0.1.x` version numbers.
+## Barnes-Hut vs. All-Pairs (head-to-head)
+
+Both solvers have been benchmarked together since Barnes-Hut's introduction in `v0.4.1`
+
+|  Version  | All-Pairs Hot Loop | Barnes-Hut Hot Loop | Barnes-Hut vs All-Pairs |
+|:---------:|:------------------:|:-------------------:|:-----------------------:|
+| [v0.4.1]  |       5.59 s       |      102.93 s       |         -1840%          |
+| [v0.4.2]  |       5.69 s       |       24.34 s       |          -430%          |
+| [v0.4.3]  |       5.67 s       |       8.08 s        |          -140%          |
+| [v0.4.4]  |       5.88 s       |       2.71 s        |          +220%          |
+
+`v0.4.4` is the first release where Barnes-Hut outperforms All-Pairs outright.
 
 ## All-Pairs (Brute-Force) Performance
-The All-Pairs solver is evaluated against the official NVIDIA CUDA N-Body sample (45,000 bodies, identical random distribution, 1000 steps).
 
-| Version | Hot Loop | Lifetime | Refresh Rate | vs NVIDIA Baseline |
-| :--- | :--- | :--- | :---: | :--- |
-| **[NVIDIA Sample]** | 6.04 s | 6.30 s | 165.48 Hz | **Baseline** |
-| [v0.4.4] | 5.88 s | 6.10 s | 170.01 Hz | +2.7% |
-| [v0.4.3] | 5.84 s | 6.08 s | 171.32 Hz | +3.5% |
-| [v0.4.2] | 5.90 s | 6.14 s | 169.46 Hz | +2.4% |
-| [v0.4.1] | 5.86 s | 6.09 s | 170.79 Hz | +3.2% |
-| [v0.4.0] | 5.64 s | 5.90 s | 177.35 Hz | +7.2% |
-| [v0.3.0] | 5.58 s | 5.84 s | 179.24 Hz | +8.3% |
-| [v0.2.1] | 5.73 s | 6.03 s | 174.62 Hz | +5.5% |
-| [v0.2.0] | 5.62 s | 5.95 s | 177.82 Hz | +7.5% |
-| [v0.1.2] | 7.67 s | 8.00 s | 130.33 Hz | −21.2% |
-| [v0.1.1] | 12.45 s | 12.72 s | 80.34 Hz | −51.4% |
-| [v0.1.0] | 12.38 s | 12.67 s | 80.78 Hz | −51.2% |
+Evaluated against the official NVIDIA CUDA N-Body sample (45,000 bodies, identical random distribution, 1000 steps).
+
+|     Version      | Hot Loop  | Lifetime  | Refresh Rate | Δ vs Previous | vs NVIDIA Baseline  |
+|:----------------:|:---------:|:---------:|:------------:|:-------------:|:-------------------:|
+| [NVIDIA Sample]  |  6.04 s   |  6.30 s   |  165.48 Hz   |      N/A      |      Baseline       |
+|     [v0.1.0]     |  12.45 s  |  12.67 s  |   80.31 Hz   |      N/A      |       −51.5%        |
+|     [v0.1.1]     |  12.44 s  |  12.64 s  |   80.41 Hz   |     +0.1%     |       −51.4%        |
+|     [v0.1.2]     |  7.62 s   |  7.84 s   |  131.30 Hz   |    +63.3%     |       −20.7%        |
+|     [v0.2.0]     |  5.58 s   |  5.81 s   |  179.24 Hz   |    +36.5%     |        +8.3%        |
+|     [v0.2.1]     |  5.70 s   |  5.94 s   |  175.47 Hz   |     −2.1%     |        +6.0%        |
+|     [v0.3.0]     |  5.69 s   |  5.94 s   |  175.65 Hz   |     +0.1%     |        +6.1%        |
+|     [v0.4.0]     |  5.58 s   |  5.81 s   |  179.08 Hz   |     +2.0%     |        +8.2%        |
+|     [v0.4.1]     |  5.59 s   |  5.81 s   |  178.95 Hz   |     −0.1%     |        +8.1%        |
+|     [v0.4.2]     |  5.69 s   |  5.93 s   |  175.78 Hz   |     −1.8%     |        +6.2%        |
+|     [v0.4.3]     |  5.67 s   |  5.90 s   |  176.40 Hz   |     +0.4%     |        +6.6%        |
+|     [v0.4.4]     |  5.88 s   |  6.11 s   |  170.10 Hz   |     −3.6%     |        +2.8%        |
+
+*Δ vs Previous and vs NVIDIA Baseline are both computed from Refresh Rate (Hz).*
 
 ## Barnes-Hut Performance
-Starting from `v0.4.1`, the project includes a Barnes-Hut solver.
 
-| Version | Hot Loop | Lifetime | Refresh Rate |
-| :--- | :--- | :--- | :---: |
-| [v0.4.4] | 2.68 s | 2.91 s | 373.13 Hz |
-| [v0.4.3] | 8.35 s | N/A | 119.82 Hz |
-| [v0.4.2] | 24.35 s | N/A | 41.06 Hz |
-| [v0.4.1] | 99.45 s | N/A | 10.06 Hz |
+Introduced in `v0.4.1`.
+
+|  Version  | Hot Loop  | Lifetime  | Refresh Rate | Δ vs Previous |
+|:---------:|:---------:|:---------:|:------------:|:-------------:|
+| [v0.4.1]  | 102.93 s  | 103.17 s  |   9.72 Hz    |       —       |
+| [v0.4.2]  |  24.34 s  |  24.56 s  |   41.09 Hz   |    +322.7%    |
+| [v0.4.3]  |  8.08 s   |  8.32 s   |  123.79 Hz   |    +201.3%    |
+| [v0.4.4]  |  2.71 s   |  2.94 s   |  368.73 Hz   |    +197.9%    |
 
 [NVIDIA Sample]: https://github.com/NVIDIA/cuda-samples/tree/master/cpp/5_Domain_Specific/nbody
 [v0.4.4]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.3...v0.4.4

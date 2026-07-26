@@ -12,10 +12,10 @@ A GPU-accelerated N-Body simulation written in C++ and CUDA.
 * **Configuration:** Tweak simulation constants (such as body count, time delta (`dt`), softening factors, and debugging flags) using a centralized `SceneSettings` struct.
 ## Performance
 
-|      Version      | Hot Loop Time  | Speed vs. Sample |
-|:-----------------:|:--------------:|:----------------:|
-| [v0.4.0 (Latest Rel.)] |     5.64 s     |   7.2% faster    |
-|  [NVIDIA Sample]  |     6.04 s     |     Baseline     |
+|        Version         | Hot Loop Time | Speed vs. Sample |
+|:----------------------:|:-------------:|:----------------:|
+| [v0.4.0 (Latest Rel.)] |    5.64 s     |   8.2% faster    |
+|    [NVIDIA Sample]     |    6.04 s     |     Baseline     |
 
 *Measured at 45,000 bodies over 1000 steps on an RTX 4060. For complete methodology, hardware specifications, and historical version data, see [BENCHMARKS.md](benchmarks/BENCHMARKS.md).*
 

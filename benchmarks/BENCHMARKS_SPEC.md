@@ -1,6 +1,6 @@
 # Benchmark Methodology
 
-To maintain strict consistency, every version of this project is profiled using the exact same initial conditions, simulation parameters, and hardware environment.
+To maintain consistency, every version of this project is profiled using the exact same initial conditions, simulation parameters, and hardware environment.
 
 ## Measured Values
 To avoid capturing one-off system stutters, every version is executed **5 times**. We drop the highest and lowest anomalies, and record the average of the remaining 3 runs (the "Middle 3 Average").
