@@ -9,7 +9,8 @@ add_executable(nbody src/main.cu
         src/cuda_solvers/barnes_hut/z_order.cu
         src/cuda_solvers/barnes_hut/radtree_build.cu
         src/cuda_solvers/barnes_hut/radtree_coms.cu
-        src/cuda_solvers/barnes_hut/radtree_forces.cu)
+        src/cuda_solvers/barnes_hut/radtree_forces.cu
+        src/config_parse.h)
 
 set_target_properties(nbody PROPERTIES
         CUDA_SEPARABLE_COMPILATION ON

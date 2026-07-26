@@ -12,12 +12,13 @@ A GPU-accelerated N-Body simulation written in C++ and CUDA.
 * **Configuration:** Tweak simulation constants (such as body count, time delta (`dt`), softening factors, and debugging flags) using a centralized `SceneSettings` struct.
 ## Performance
 
-|        Version         | Hot Loop Time | Speed vs. Sample |
-|:----------------------:|:-------------:|:----------------:|
-| [v0.4.0 (Latest Rel.)] |    5.64 s     |   8.2% faster    |
-|    [NVIDIA Sample]     |    6.04 s     |     Baseline     |
+|       Version       | Hot Loop Time | Speed vs. Sample |
+|:-------------------:|:-------------:|:----------------:|
+| [v0.5.0 Barnes-Hut] |    2.71 s     |     +123.3%      |
+| [v0.5.0 All-Pairs]  |    5.64 s     |      +3.1%       |
+|   [NVIDIA Sample]   |    6.04 s     |     Baseline     |
 
-*Measured at 45,000 bodies over 1000 steps on an RTX 4060. For complete methodology, hardware specifications, and historical version data, see [BENCHMARKS.md](benchmarks/BENCHMARKS.md).*
+*Measured at 45,000 bodies over 1000 steps on an RTX 4060. For complete methodology, hardware specifications, and historical version data, see [BENCHMARKS.md](benchmarks/BENCHMARKS.md) and [BENCHMARKS_SPEC.md](benchmarks/BENCHMARKS_SPEC.md).*
 
 ## Prerequisites
 To compile and run this project, you will need:
@@ -26,26 +27,8 @@ To compile and run this project, you will need:
 
 ## Build Guidelines
 
-### 1. Configuration (Pre-build)
-Currently, simulation parameters are configured directly within `main.cu`. Before compiling, open `main.cu` and modify the `SceneDescription` and `SceneSettings` structs to suit your requirements:
-
-```c++
-    SceneSettings scene_settings {
-        .body_count = 45000, //N-Count of the simulation
-        .steps = 1000, //Step count
-        .dt = 0.02, //Physical time elapsed per step
-        .softening = 4.0f, //Distance offset for collisionless systems
-
-        .cuda_err = false, //CUDA error checking flag
-        .hotloop_time = false, //Hotloop time printing flag
-    };
-
-    SceneDescription scene_desc {
-        .solver = std::make_unique<Solvers::AllPairs>(scene_settings), //Solver used for propagation
-        .distribution = std::make_unique<Distributions::RandomCube>(scene_settings, 15000.0f), //Distribution used for initial conditions
-        .exporter = std::make_unique<Exporters::XDMF>(scene_settings, ".", "simulation_data", "simulation_data_org"), //Data exporter
-    };
-```
+### 1. Configuration
+simulation parameters are configured from config.ini.
 
 ### 2. Building
 This project requires CMake 4.2+, a C++20 compatible compiler (such as MSVC on Windows), and the CUDA Toolkit.
@@ -64,7 +47,7 @@ cmake --build . --config Release
 Once the build process is complete, the executable should be located inside a subfolder (typically named Release).
 To run the simulation:
 ```bash
-./Release/nbody.exe
+./Release/nbody.exe /directory/of/config
 ```
 
 
@@ -73,5 +56,6 @@ To run the simulation:
 - The entire update history of this project will be stored in the [Changelog](CHANGELOG.md).
 - This project is licensed using the [MIT License](LICENSE).
 
-[v0.4.0 (Latest Rel.)]: https://gitlab.com/yks4892825/nbody/-/compare/v0.3.0...v0.4.0
+[v0.5.0 Barnes-Hut]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.4...v0.5.0
+[v0.5.0 All-Pairs]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.4...v0.5.0
 [NVIDIA Sample]: https://github.com/NVIDIA/cuda-samples/tree/master/cpp/5_Domain_Specific/nbody
