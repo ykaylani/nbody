@@ -14,11 +14,11 @@ __device__ inline uint64_t Spread21B(uint32_t x) {
     return val;
 }
 
-__global__ void EncodeF3A(float3* encode, uint64_t* out, uint32_t count) {
+__global__ void EncodeF3A(float4* encode, uint64_t* out, uint32_t count) {
     uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= count) return;
 
-    float3 process_point = encode[idx];
+    float4 process_point = encode[idx];
     float normalized_x = (process_point.x - c_min_bound) * c_scale_denominator_inv;
     float normalized_y = (process_point.y - c_min_bound) * c_scale_denominator_inv;
     float normalized_z = (process_point.z - c_min_bound) * c_scale_denominator_inv;

@@ -7,22 +7,18 @@
 #include "../cuda_solvers/barnes_hut/radtree_nodes.h"
 
 struct BodyData {
-    float3* positions_1 = nullptr;
-    float3* velocities_1 = nullptr;
+    float4* positions_1 = nullptr;
+    float4* velocities_1 = nullptr;
 
-    float3* positions_2 = nullptr;
-    float3* velocities_2 = nullptr;
-
-    float* masses = nullptr;
+    float4* positions_2 = nullptr;
+    float4* velocities_2 = nullptr;
 
     BodyData(uint32_t n_count) {
-        cudaMallocManaged(&positions_1, sizeof(float3) * n_count);
-        cudaMallocManaged(&velocities_1, sizeof(float3) * n_count);
+        cudaMallocManaged(&positions_1, sizeof(float4) * n_count);
+        cudaMallocManaged(&velocities_1, sizeof(float4) * n_count);
 
-        cudaMallocManaged(&positions_2, sizeof(float3) * n_count);
-        cudaMallocManaged(&velocities_2, sizeof(float3) * n_count);
-
-        cudaMallocManaged(&masses, sizeof(float) * n_count);
+        cudaMallocManaged(&positions_2, sizeof(float4) * n_count);
+        cudaMallocManaged(&velocities_2, sizeof(float4) * n_count);
     }
 
     ~BodyData() {
@@ -31,8 +27,6 @@ struct BodyData {
 
         cudaFree(positions_2);
         cudaFree(velocities_2);
-
-        cudaFree(masses);
     }
 
     BodyData(const BodyData&) = delete;
@@ -46,18 +40,18 @@ struct BarnesHutInterData {
     uint32_t* sorted_to_original = nullptr;
 
     RadixTreeInternal* bintrie_internals = nullptr;
-    float3* node_coms = nullptr;
+    float4* node_coms = nullptr;
     float* node_masses = nullptr;
 
-    float3* node_bounds_min = nullptr;
-    float3* node_bounds_max = nullptr;
+    float4* node_bounds_min = nullptr;
+    float4* node_bounds_max = nullptr;
     cuda::atomic<int32_t, cuda::thread_scope_device>* node_flags = nullptr;
 
-    float3* scratch_positions_sorted = nullptr;
-    float3* scratch_velocities_sorted = nullptr;
+    float4* scratch_positions_sorted = nullptr;
+    float4* scratch_velocities_sorted = nullptr;
     float* scratch_masses_sorted = nullptr;
-    float3* scratch_positions_dst_sorted = nullptr;
-    float3* scratch_velocities_dst_sorted = nullptr;
+    float4* scratch_positions_dst_sorted = nullptr;
+    float4* scratch_velocities_dst_sorted = nullptr;
 
     BarnesHutInterData(uint32_t n_count) {
 
@@ -65,20 +59,20 @@ struct BarnesHutInterData {
         cudaMallocManaged(&leaf_parents, sizeof(int32_t) * n_count);
         cudaMallocManaged(&sorted_to_original, sizeof(uint32_t) * n_count);
 
-        cudaMallocManaged(&scratch_positions_sorted, sizeof(float3) * n_count);
-        cudaMallocManaged(&scratch_velocities_sorted, sizeof(float3) * n_count);
+        cudaMallocManaged(&scratch_positions_sorted, sizeof(float4) * n_count);
+        cudaMallocManaged(&scratch_velocities_sorted, sizeof(float4) * n_count);
         cudaMallocManaged(&scratch_masses_sorted, sizeof(float) * n_count);
-        cudaMallocManaged(&scratch_positions_dst_sorted, sizeof(float3) * n_count);
-        cudaMallocManaged(&scratch_velocities_dst_sorted, sizeof(float3) * n_count);
+        cudaMallocManaged(&scratch_positions_dst_sorted, sizeof(float4) * n_count);
+        cudaMallocManaged(&scratch_velocities_dst_sorted, sizeof(float4) * n_count);
 
         uint32_t internal_count = n_count - 1;
 
         cudaMallocManaged(&bintrie_internals, sizeof(RadixTreeInternal) * internal_count);
-        cudaMallocManaged(&node_coms, sizeof(float3) * internal_count);
+        cudaMallocManaged(&node_coms, sizeof(float4) * internal_count);
         cudaMallocManaged(&node_masses, sizeof(float) * internal_count);
 
-        cudaMallocManaged(&node_bounds_min, sizeof(float3) * internal_count);
-        cudaMallocManaged(&node_bounds_max, sizeof(float3) * internal_count);
+        cudaMallocManaged(&node_bounds_min, sizeof(float4) * internal_count);
+        cudaMallocManaged(&node_bounds_max, sizeof(float4) * internal_count);
         cudaMallocManaged(&node_flags, sizeof(int32_t) * internal_count);
     }
 

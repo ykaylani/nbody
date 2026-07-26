@@ -8,7 +8,7 @@ constexpr float c_gravitational = 6.6743e-11;
 struct Distribution {
     SceneSettings scene_settings;
 
-    virtual void Apply(float3* positions, float3* velocities, float* masses, float mass_assign) = 0;
+    virtual void Apply(float4* positions, float4* velocities, float mass_assign) = 0;
     virtual ~Distribution() = default;
 
     Distribution(SceneSettings scene_settings) : scene_settings(scene_settings) {}
@@ -20,15 +20,14 @@ namespace Distributions {
         float size_ = 0.0f;
         std::random_device rd;
 
-        void Apply(float3 *positions, float3 *velocities, float *masses, float mass_assign) override {
+        void Apply(float4 *positions, float4 *velocities, float mass_assign) override {
             if (size_ == 0) throw std::invalid_argument("Attempt to use RandomCube distribution of size 0");
             std::mt19937 gen(rd());
             std::uniform_real_distribution<float> dist(-size_, size_);
 
             for (uint32_t i = 0; i < scene_settings.body_count; i++) {
-                positions[i] = {dist(gen), dist(gen), dist(gen)};
-                velocities[i] = {0.0f, 0.0f, 0.0f};
-                masses[i] = mass_assign;
+                positions[i] = {dist(gen), dist(gen), dist(gen), mass_assign};
+                velocities[i] = {0.0f, 0.0f, 0.0f, 0.0f};
             }
         }
 
@@ -39,7 +38,7 @@ namespace Distributions {
         float radius_ = 0.0f;
         std::random_device rd;
 
-        void Apply(float3 *positions, float3 *velocities, float *masses, float mass_assign) override {
+        void Apply(float4 *positions, float4 *velocities, float mass_assign) override {
             if (radius_ == 0.0f) throw std::invalid_argument("Attempt to use RandomSphere distribution of radius 0");
             std::mt19937 gen(rd());
             std::uniform_real_distribution<float> dist(-radius_, radius_);
@@ -52,12 +51,11 @@ namespace Distributions {
                 float z = dist(gen);
 
                 if ((x * x + y * y + z * z) <= radius_sq) {
-                    positions[i] = {x, y, z};
+                    positions[i] = {x, y, z, mass_assign};
                     i++;
                 }
 
-                velocities[i] = {0.0f, 0.0f, 0.0f};
-                masses[i] = mass_assign;
+                velocities[i] = {0.0f, 0.0f, 0.0f, 0.0f};
             }
         }
 
@@ -74,7 +72,7 @@ namespace Distributions {
 
         float system_mass = 0;
 
-        void Apply(float3* positions, float3* velocities, float* masses, float mass_assign) override {
+        void Apply(float4* positions, float4* velocities, float mass_assign) override {
             std::mt19937 gen(rd());
 
             float max_radius_sqr = max_radius * max_radius;
@@ -99,7 +97,7 @@ namespace Distributions {
                 float x = radius_2D * cos(azimuth);
                 float y = radius_2D * sin(azimuth);
 
-                positions[i] = {x, y, z};
+                positions[i] = {x, y, z, mass_assign};
 
                 // velocities
 
@@ -108,7 +106,7 @@ namespace Distributions {
                 float criterion = 1;
                 float velocity_magnitude = 0;
 
-                while (criterion > norm_velocity * norm_velocity * pow(1 - norm_velocity * norm_velocity, 7.0f/2.0f)) { norm_velocity = dist(gen); criterion = dist2(gen); }
+                while (criterion > norm_velocity * norm_velocity * std::pow(1 - norm_velocity * norm_velocity, 7.0f/2.0f)) { norm_velocity = dist(gen); criterion = dist2(gen); }
                 velocity_magnitude = esc_velocity * norm_velocity;
 
                 float velocity_azimuth = dist_azimuth(gen);
@@ -119,8 +117,7 @@ namespace Distributions {
                 float vy = velocity_magnitude * sine * sin(velocity_azimuth);
                 float vz = velocity_magnitude * cosine;
 
-                velocities[i] = {vx, vy, vz};
-                masses[i] = mass_assign;
+                velocities[i] = {vx, vy, vz, 0.0f};
             }
         }
 

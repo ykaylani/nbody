@@ -15,13 +15,15 @@ constexpr uint16_t block_threads = 256;
 
 struct Solver {
     SceneSettings scene_settings;
+    double total_hotloop = 0.0;
 
     virtual void Propagate(BodyData& body_data, float dt) {
 
         bool synced = false;
+        bool track_time = scene_settings.hotloop_time || scene_settings.total_hotloop_time;
 
         std::chrono::steady_clock::time_point begin_hotloop;
-        if (scene_settings.hotloop_time) begin_hotloop = std::chrono::steady_clock::now();
+        if (track_time) begin_hotloop = std::chrono::steady_clock::now();
 
         Solve(body_data, dt);
 
@@ -40,18 +42,29 @@ struct Solver {
             }
         }
 
-        if (scene_settings.hotloop_time) {
+        if (track_time) {
             if (!synced) cudaDeviceSynchronize();
             std::chrono::steady_clock::time_point end_hotloop = std::chrono::steady_clock::now();
-            std::cout << "Execute time = " << std::chrono::duration_cast<std::chrono::microseconds>(end_hotloop - begin_hotloop).count() << " μs" << std::endl;
-        }
 
+            if (scene_settings.total_hotloop_time) {
+                total_hotloop += std::chrono::duration<double>(end_hotloop - begin_hotloop).count();
+            }
+
+            if (scene_settings.hotloop_time) {
+                std::cout << "Execute time = " << std::chrono::duration_cast<std::chrono::seconds>(end_hotloop - begin_hotloop).count() << " s" << std::endl;
+            }
+        }
     }
 
     virtual void Solve(BodyData& body_data, float dt) = 0;
 
     Solver(const SceneSettings& settings) : scene_settings(settings) {}
-    virtual ~Solver() = default;
+
+    virtual ~Solver() {
+        if (scene_settings.total_hotloop_time) {
+            std::cout << "Total Hotloop Time: " << total_hotloop << " s" << std::endl;
+        }
+    }
 };
 
 namespace Solvers {
@@ -70,7 +83,6 @@ namespace Solvers {
                 body_data.velocities_1,
                 body_data.positions_2,
                 body_data.velocities_2,
-                body_data.masses,
                 body_count,
                 dt,
                 scene_settings.softening);
@@ -119,13 +131,11 @@ namespace Solvers {
                 inter_data.bintrie_internals,
                 inter_data.node_flags,
                 inter_data.node_coms,
-                inter_data.node_masses,
                 inter_data.node_bounds_min,
                 inter_data.node_bounds_max,
                 inter_data.sorted_to_original,
                 inter_data.leaf_parents,
                 body_data.positions_1,
-                body_data.masses,
                 body_count);
 
             CalculateForces(
@@ -133,16 +143,13 @@ namespace Solvers {
                 body_data.velocities_1,
                 body_data.positions_2,
                 body_data.velocities_2,
-                body_data.masses,
                 inter_data.bintrie_internals,
-                inter_data.node_masses,
                 inter_data.node_coms,
                 inter_data.node_bounds_min,
                 inter_data.node_bounds_max,
                 inter_data.sorted_to_original,
                 inter_data.scratch_positions_sorted,
                 inter_data.scratch_velocities_sorted,
-                inter_data.scratch_masses_sorted,
                 inter_data.scratch_positions_dst_sorted,
                 inter_data.scratch_velocities_dst_sorted,
                 opening_angle_criterion,

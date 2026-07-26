@@ -17,7 +17,7 @@ A GPU-accelerated N-Body simulation written in C++ and CUDA.
 | [v0.4.0 (Latest Rel.)] |     5.64 s     |   7.2% faster    |
 |  [NVIDIA Sample]  |     6.04 s     |     Baseline     |
 
-*Measured at 45,000 bodies over 1000 steps on an RTX 4060. For complete methodology, hardware specifications, and historical version data, see [BENCHMARKS.md](BENCHMARKS.md).*
+*Measured at 45,000 bodies over 1000 steps on an RTX 4060. For complete methodology, hardware specifications, and historical version data, see [BENCHMARKS.md](benchmarks/BENCHMARKS.md).*
 
 ## Prerequisites
 To compile and run this project, you will need:
