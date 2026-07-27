@@ -1,7 +1,6 @@
 #ifndef NBODY_CONFIG_PARSE_H
 #define NBODY_CONFIG_PARSE_H
 
-#include <iostream>
 #include <fstream>
 #include <string>
 #include <unordered_map>

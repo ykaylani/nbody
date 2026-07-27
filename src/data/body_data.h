@@ -95,6 +95,28 @@ struct BarnesHutInterData {
         cudaFree(node_bounds_max);
         cudaFree(node_flags);
     }
+
+    BarnesHutInterData(const BarnesHutInterData&) = delete;
+    BarnesHutInterData& operator=(const BarnesHutInterData&) = delete;
+};
+
+struct EnergyCalculationData {
+    float* kinetics = nullptr;
+    float* potentials = nullptr;
+
+    EnergyCalculationData(uint32_t n_count) {
+        cudaMallocManaged(&kinetics, sizeof(float) * n_count);
+        cudaMallocManaged(&potentials, sizeof(float) * n_count);
+    }
+
+    ~EnergyCalculationData() {
+        cudaFree(kinetics);
+        cudaFree(potentials);
+    }
+
+    EnergyCalculationData(const EnergyCalculationData&) = delete;
+    EnergyCalculationData& operator=(const EnergyCalculationData&) = delete;
+
 };
 
 #endif //NBODY_BODY_DATA_H

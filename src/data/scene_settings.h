@@ -10,6 +10,8 @@ struct SceneSettings {
     bool cuda_err;
     bool hotloop_time;
     bool total_hotloop_time;
+
+    bool mechanical_energy;
 };
 
 #endif //NBODY_SCENE_SETTINGS_H

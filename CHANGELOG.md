@@ -3,6 +3,22 @@ All notable changes to this project will be documented in this file.
 
 > **Versioning Note:** On 2026-07-19, historical tags `v0.1.3` through `v0.1.6` were retroactively updated to `v0.2.0` through `v0.4.0`. This was done to properly align with Semantic Versioning, as those releases contained breaking changes to the public API and data semantics.
 
+## [0.5.1] - 2026-7-28
+### Removed
+- Redundant headers in `config_parse.h`
+
+### Fixed
+- Inconsistent naming in All-Pairs kernel
+- Indexing in All-Pairs kernel (used to only work when `blockDim.x` was 256, which it was)
+
+### Added
+- Energy monitoring
+- `cudaErrchk` macro
+- `SimulationController` class for general simulation loop
+
+### Changed
+- Moved flag response from `Solver` class to new `SimulationController` class
+
 ## [0.5.0] - 2026-07-27
 ### Added
 - INI config to reduce rebuilding
@@ -98,6 +114,7 @@ All notable changes to this project will be documented in this file.
 - Performance benchmarking via `std::chrono`
 - Memory usage tracking via `GetProcessMemoryInfo()`
 
+[0.5.0]: https://gitlab.com/yks4892825/nbody/-/compare/v0.5.0...v0.5.1
 [0.5.0]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.4...v0.5.0
 [0.4.4]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.3...v0.4.4
 [0.4.3]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.2...v0.4.3

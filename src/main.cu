@@ -4,18 +4,23 @@
 
 #include "data/body_data.h"
 #include "data/scene_desc.h"
+
 #include "strats/distributions.h"
 #include "strats/exporters.h"
-#include "../src/config_parse.h"
+
+#include "loop/config_parse.h"
+#include "loop/simulation_controller.h"
 
 int main(int argc, char** argv) {
     std::cout << "Initializing" << std::endl;
-    std::string config_path = "config.ini";
+    std::string config_path = "../config.ini";
 
     if (argc > 1) {
         std::string config_dir = argv[1];
         if (!config_dir.empty() && config_dir.back() != '/' && config_dir.back() != '\\') config_dir += "/";
         config_path = config_dir + "config.ini";
+    } else {
+        throw std::runtime_error("No config.ini provided");
     }
 
     std::cout << "Reading config from " << config_path << std::endl;
@@ -30,6 +35,7 @@ int main(int argc, char** argv) {
         .cuda_err = ParseBoolean(config["settings.execution.cuda_errchk"]),
         .hotloop_time = ParseBoolean(config["settings.execution.hotloop_time"]),
         .total_hotloop_time = ParseBoolean(config["settings.execution.total_hotloop_time"]),
+        .mechanical_energy = ParseBoolean(config["settings.execution.mechanical_energy"]),
     };
 
     SceneDescription scene_description;
@@ -86,8 +92,10 @@ int main(int argc, char** argv) {
 
     std::cout << "Initialization complete" << std::endl;
 
+    SimulationController simulation_controller(scene_settings);
+
     for (int i = 0; i < scene_settings.steps; i++) {
-        scene_description.solver->Propagate(body_data, scene_settings.dt);
+        simulation_controller.Propagate(*scene_description.solver, body_data, scene_settings.dt);
         cudaDeviceSynchronize();
 
         if (save_data) {

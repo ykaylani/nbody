@@ -6,29 +6,29 @@ __global__ void AllPairsKernel(
     float4* velocities_src,
     float4* positions_dst,
     float4* velocities_dst,
-    const uint32_t bodyCount,
+    const uint32_t body_count,
     const float dt,
     const float softening) {
 
     uint32_t idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx >= bodyCount) return;
+    if (idx >= body_count) return;
 
     float4 acceleration = {0, 0, 0, 0};
     const float4 process_position = positions_src[idx];
     const float4 process_velocity = velocities_src[idx];
 
-    uint32_t sample_length = (bodyCount + gridDim.x - 1) / gridDim.x;
+    uint32_t sample_length = (body_count + gridDim.x - 1) / gridDim.x;
     const float soft_sqr = softening * softening;
 
     extern __shared__ float4 positions_sampling[];
 
     for (int i = 0; i < gridDim.x; i++) {
 
-        int tile_start_idx = i * sample_length;
+        int tile_start_idx = i * blockDim.x;
         int sampling_idx = tile_start_idx + threadIdx.x;
-        if (sampling_idx < bodyCount) { positions_sampling[threadIdx.x] = positions_src[sampling_idx]; }
+        if (sampling_idx < body_count) { positions_sampling[threadIdx.x] = positions_src[sampling_idx]; }
         __syncthreads();
-        int tile_elements = min((int)blockDim.x, (int)(bodyCount - tile_start_idx));
+        int tile_elements = min((int)blockDim.x, (int)(body_count - tile_start_idx));
 
         for (int k = 0; k < tile_elements; k++) {
 
