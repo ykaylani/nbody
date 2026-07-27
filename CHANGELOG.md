@@ -114,7 +114,7 @@ All notable changes to this project will be documented in this file.
 - Performance benchmarking via `std::chrono`
 - Memory usage tracking via `GetProcessMemoryInfo()`
 
-[0.5.0]: https://gitlab.com/yks4892825/nbody/-/compare/v0.5.0...v0.5.1
+[0.5.1]: https://gitlab.com/yks4892825/nbody/-/compare/v0.5.0...v0.5.1
 [0.5.0]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.4...v0.5.0
 [0.4.4]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.3...v0.4.4
 [0.4.3]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.2...v0.4.3
