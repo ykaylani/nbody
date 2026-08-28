@@ -9,7 +9,7 @@ A GPU-accelerated N-Body simulation written in C++ and CUDA.
     * **Distributions:** Customizable initial condition generators (e.g., `Distributions::RandomCube`).
     * **Exporters:** Flexible data output handlers.
 * **Multiple Export Formats:** Export simulation data in **XDMF**, **VTP**, or **CSV** formats.
-* **Configuration:** Tweak simulation constants (such as body count, time delta (`dt`), softening factors, and debugging flags) using a centralized `SceneSettings` struct.
+* **Configuration:** Tweak simulation constants (such as body count, time delta (`dt`), softening factors, and debugging flags) using a config.ini file.
 ## Performance
 
 |       Version       | Hot Loop Time | Speed vs. Sample |
