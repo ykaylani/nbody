@@ -1,12 +1,12 @@
 # nbody
 
-A GPU-accelerated N-Body simulation written in C++ and CUDA.
+A GPU N-Body simulation written in C++ and CUDA.
 
 ## Features
-* **GPU-Accelerated Compute:** Physics calculations are offloaded to the GPU using CUDA.
-* **Modular Architecture:** Built using the Strategy pattern, allowing you to swap out core components:
-    * **Solvers:** Pluggable propagation algorithms (e.g., `Solvers::AllPairs`). 
-    * **Distributions:** Customizable initial condition generators (e.g., `Distributions::RandomCube`).
+* **GPU Compute:** Physics calculations are offloaded to the GPU using CUDA.
+* **Modular Architecture:** Built using the Strategy pattern, allowing you to swap out components:
+    * **Solvers:** Pluggable propagation algorithms. 
+    * **Distributions:** Customizable initial condition generators.
     * **Exporters:** Flexible data output handlers.
 * **Multiple Export Formats:** Export simulation data in **XDMF**, **VTP**, or **CSV** formats.
 * **Configuration:** Tweak simulation constants (such as body count, time delta (`dt`), softening factors, and debugging flags) using a config.ini file.
@@ -18,7 +18,7 @@ A GPU-accelerated N-Body simulation written in C++ and CUDA.
 | [v0.5.0 All-Pairs]  |    5.64 s     |      +3.1%       |
 |   [NVIDIA Sample]   |    6.04 s     |     Baseline     |
 
-*Measured at 45,000 bodies over 1000 steps on an RTX 4060. For complete methodology, hardware specifications, and historical version data, see [BENCHMARKS.md](benchmarks/BENCHMARKS.md) and [BENCHMARKS_SPEC.md](benchmarks/BENCHMARKS_SPEC.md).*
+*Measured at 45,000 bodies over 1000 steps on an RTX 4060. For methodology, hardware specifications, and historical version data, see [BENCHMARKS.md](benchmarks/BENCHMARKS.md) and [BENCHMARKS_SPEC.md](benchmarks/BENCHMARKS_SPEC.md).*
 
 ## Prerequisites
 To compile and run this project, you will need:
