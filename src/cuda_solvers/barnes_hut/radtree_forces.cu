@@ -161,25 +161,25 @@ __global__ void ScatterParticles(
 }
 
 void CalculateForces(
-    const float4* positions,
-    const float4* velocities,
+    const float4* __restrict__ positions,
+    const float4* __restrict__ velocities,
     float4* positions_dst,
     float4* velocities_dst,
     const RadixTreeInternal* nodes,
-    const float4* node_coms,
-    const float4* node_bounds_min,
-    const float4* node_bounds_max,
-    const uint32_t* sorted_to_original,
+    const float4* __restrict__ node_coms,
+    const float4* __restrict__ node_bounds_min,
+    const float4* __restrict__ node_bounds_max,
+    const uint32_t* __restrict__ sorted_to_original,
     float4* scratch_positions_sorted,
     float4* scratch_velocities_sorted,
     float4* scratch_positions_dst_sorted,
     float4* scratch_velocities_dst_sorted,
-    const float opening_angle_criterion,
-    const float softening,
-    const float dt,
-    const int32_t num_particles,
+    float opening_angle_criterion,
+    float softening,
+    float dt,
+    int32_t num_particles,
     const int32_t leaf_bucket_size,
-    const int32_t threads_per_block,
+    int32_t threads_per_block,
     cudaStream_t stream) {
 
     int32_t blocks = (num_particles + threads_per_block - 1) / threads_per_block;
