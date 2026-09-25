@@ -12,7 +12,6 @@
 #include "loop/simulation_controller.h"
 
 int main(int argc, char** argv) {
-    std::cout << "Initializing" << std::endl;
     std::string config_path = "../config.ini";
 
     if (argc > 1) {
@@ -90,7 +89,7 @@ int main(int argc, char** argv) {
         scene_description.exporter->Export(body_data.positions_1, body_data.velocities_1, 0, scene_settings.dt);
     }
 
-    std::cout << "Initialization complete" << std::endl;
+    std::cout << "Initialization Complete" << std::endl;
 
     SimulationController simulation_controller(scene_settings);
 
@@ -106,6 +105,6 @@ int main(int argc, char** argv) {
     cudaDeviceSynchronize();
     if (save_data) scene_description.exporter->Finalize();
 
-    std::cout << "Complete." << std::endl;
+    std::cout << "Run Complete" << std::endl;
     return 0;
 }

@@ -2,20 +2,6 @@
 
 All notable performance benchmarks are documented here. For details on the hardware environment, simulation parameters, and how these metrics are captured, see the [Benchmark Methodology](BENCHMARKS_SPEC.md).
 
-## Barnes-Hut vs. All-Pairs (head-to-head)
-
-Both solvers have been benchmarked together since Barnes-Hut's introduction in `v0.4.1`
-
-|  Version  | All-Pairs Hot Loop | Barnes-Hut Hot Loop | Barnes-Hut vs All-Pairs |
-|:---------:|:------------------:|:-------------------:|:-----------------------:|
-| [v0.4.1]  |       5.59 s       |      102.93 s       |         -1840%          |
-| [v0.4.2]  |       5.69 s       |       24.34 s       |          -430%          |
-| [v0.4.3]  |       5.67 s       |       8.08 s        |          -140%          |
-| [v0.4.4]  |       5.88 s       |       2.71 s        |          +220%          |
-| [v0.5.0]  |       5.86 s       |       2.71 s        |          +217%          |
-
-`v0.4.4` is the first release where Barnes-Hut outperforms All-Pairs outright.
-
 ## All-Pairs (Brute-Force) Performance
 
 Evaluated against the official NVIDIA CUDA N-Body sample (45,000 bodies, identical random distribution, 1000 steps).
@@ -50,7 +36,21 @@ Introduced in `v0.4.1`.
 | [v0.4.4]  |  2.71 s   |  2.94 s   |  368.73 Hz   |    +197.9%    |
 | [v0.5.0]  |  2.71 s   |  2.93 s   |  369.55 Hz   |     +0.2%     |
 
+## Scaling
+
+How each solver's Hot Loop Time and Refresh Rate scale as N grows (see [Benchmark Methodology](BENCHMARKS_SPEC.md#n-count-scaling-test)). All-Pairs is only measured up to 100,000 bodies.
+
+Version: [v0.5.1]
+
+|    N    | size_  | Barnes-Hut Hot Loop | Barnes-Hut Refresh Rate | All-Pairs Hot Loop | All-Pairs Refresh Rate |
+|:-------:|:------:|:--------------------:|:------------------------:|:--------------------:|:------------------------:|
+| 10,000  | 9,086  |       1.1348 s        |         881.22 Hz         |       0.3727 s        |         2683.43 Hz         |
+| 45,000  | 15,000 |       2.2326 s        |         447.91 Hz         |       6.1612 s        |          162.31 Hz         |
+| 100,000 | 19,586 |       4.1605 s        |         240.35 Hz         |       29.3488 s       |          34.07 Hz          |
+| 300,000 | 28,231 |      12.0383 s        |          83.07 Hz         |          —            |            —              |
+
 [NVIDIA Sample]: https://github.com/NVIDIA/cuda-samples/tree/master/cpp/5_Domain_Specific/nbody
+[v0.5.1]: https://gitlab.com/yks4892825/nbody/-/compare/v0.5.0...v0.5.1
 [v0.5.0]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.4...v0.5.0
 [v0.4.4]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.3...v0.4.4
 [v0.4.3]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.2...v0.4.3

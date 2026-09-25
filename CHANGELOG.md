@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 > **Versioning Note:** On 2026-07-19, historical tags `v0.1.3` through `v0.1.6` were retroactively updated to `v0.2.0` through `v0.4.0`. This was done to properly align with Semantic Versioning, as those releases contained breaking changes to the public API and data semantics.
 
+## Unreleased
+
+### Added
+- New benchmark metric (N Scaling)
+- `config.ini` example
+
 ## [0.5.1] - 2026-7-28
 ### Removed
 - Redundant headers in `config_parse.h`
