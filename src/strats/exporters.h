@@ -9,6 +9,8 @@
 #include <vector>
 #include <string>
 
+#include "../loop/simulation_controller.h"
+
 struct Exporter {
     SceneSettings scene_settings;
 

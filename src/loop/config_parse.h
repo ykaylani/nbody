@@ -19,7 +19,7 @@ inline std::string Trim(const std::string& s) {
     return s.substr(start, end - start + 1);
 }
 
-std::unordered_map<std::string, std::string> ParseINI(const std::string& filepath) {
+inline std::unordered_map<std::string, std::string> ParseINI(const std::string& filepath) {
     std::unordered_map<std::string, std::string> config;
     std::ifstream file(filepath);
     std::string line;
@@ -27,23 +27,22 @@ std::unordered_map<std::string, std::string> ParseINI(const std::string& filepat
 
     while (std::getline(file, line)) {
         auto comment_pos = line.find('#');
-
         if (comment_pos != std::string::npos) line = line.substr(0, comment_pos);
 
         line = Trim(line);
         if (line.empty()) continue;
 
-        if (line.front() == '[' && line.back() == ']') {
+        if (line.size() >= 2 && line.front() == '[' && line.back() == ']') {
             current_section = line.substr(1, line.size() - 2);
         } else {
-
             auto eq_pos = line.find('=');
             if (eq_pos != std::string::npos) {
-
                 std::string key = Trim(line.substr(0, eq_pos));
                 std::string val = Trim(line.substr(eq_pos + 1));
 
-                if (val.front() == '"' && val.back() == '"') val = val.substr(1, val.size() - 2);
+                if (val.size() >= 2 && val.front() == '"' && val.back() == '"') {
+                    val = val.substr(1, val.size() - 2);
+                }
 
                 std::string full_key = current_section.empty() ? key : current_section + "." + key;
                 config[full_key] = val;

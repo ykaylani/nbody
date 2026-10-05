@@ -3,8 +3,8 @@
 
 #include "./barnes_hut/radtree_nodes.h"
 
-__global__ void EncodeF3A(float4* encode, uint64_t* out, uint32_t count);
-
+__global__ void EncodeF3A(float4* encode, uint64_t* out, uint32_t count, const float4* __restrict__ root_bounds_min, const float4* __restrict__ root_bounds_max);
+void SeedSceneBounds(const float4* positions, float4* root_bounds_min, float4* root_bounds_max, uint32_t count);
 __global__ void BuildKarrasTrie(const uint64_t* __restrict__ codes, RadixTreeInternal* internal_nodes, int32_t* leaf_parents, int32_t body_count);
 
 __global__ void CalculateCOMs(

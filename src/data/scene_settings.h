@@ -11,7 +11,11 @@ struct SceneSettings {
     bool hotloop_time;
     bool total_hotloop_time;
 
-    bool mechanical_energy;
+    bool visualize;
+    bool visualize_tree;
+
+    float min_node_extent;
+    uint32_t n_frames_snap;
 };
 
 #endif //NBODY_SCENE_SETTINGS_H

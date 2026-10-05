@@ -5,13 +5,14 @@
 #include "../strats/distributions.h"
 #include "../strats/exporters.h"
 #include "../strats/solvers.h"
+#include "../strats/energy/energy_exporters.h"
 
 struct SceneDescription {
-    SceneSettings settings;
 
     std::unique_ptr<Solver> solver;
     std::unique_ptr<Distribution> distribution;
     std::unique_ptr<Exporter> exporter;
+    std::unique_ptr<EnergyExporter> energy_exporter;
 };
 
 #endif //NBODY_SCENE_DESC_H

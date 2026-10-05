@@ -1,13 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-> **Versioning Note:** On 2026-07-19, historical tags `v0.1.3` through `v0.1.6` were retroactively updated to `v0.2.0` through `v0.4.0`. This was done to properly align with Semantic Versioning, as those releases contained breaking changes to the public API and data semantics.
-
-## Unreleased
+## [0.6.0] - 2026-10-5
 
 ### Added
-- New benchmark metric (N Scaling)
 - `config.ini` example
+- OpenGL visualization
+- System energy exporter (CSV)
+- Kuzmin distribution
+- Adaptive bounds for Z-Order encoding
+
+### Fixed
+- Integration of energy calculation in architecture
+- Softening not squared in Barnes-Hut solver
+
+### Changed
+- [Benchmark design](BENCHMARKS_SPEC.md)
+- [README.md](README.md)
 
 ## [0.5.1] - 2026-7-28
 ### Removed
@@ -120,6 +129,7 @@ All notable changes to this project will be documented in this file.
 - Performance benchmarking via `std::chrono`
 - Memory usage tracking via `GetProcessMemoryInfo()`
 
+[0.6.0]: https://gitlab.com/yks4892825/nbody/-/compare/v0.5.1...v0.6.0
 [0.5.1]: https://gitlab.com/yks4892825/nbody/-/compare/v0.5.0...v0.5.1
 [0.5.0]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.4...v0.5.0
 [0.4.4]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.3...v0.4.4

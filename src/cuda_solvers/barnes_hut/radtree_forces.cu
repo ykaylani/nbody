@@ -13,7 +13,7 @@ __device__ __forceinline__ float4 PairAccelerations(float4 particle_position, fl
     float4 displacement = { other_position.x - particle_position.x,other_position.y - particle_position.y,other_position.z - particle_position.z, 0 };
 
     float distance_sqr = displacement.x * displacement.x + displacement.y * displacement.y + displacement.z * displacement.z;
-    float distance_sqr_soft = distance_sqr + softening;
+    float distance_sqr_soft = distance_sqr + softening * softening;
 
     float inv_dist = rsqrtf(distance_sqr_soft);
     float inv_dist_cube = inv_dist * inv_dist * inv_dist;
@@ -61,7 +61,7 @@ __global__ void CalculateForcesSorted(
     float4 particle_velocity = is_active ? velocities_sorted[sorted_idx] : make_float4(0.0f, 0.0f, 0.0f, 0.0f);
     float4 acceleration = {0.0f, 0.0f, 0.0f, 0.0f};
 
-    int32_t stack[64];
+    int32_t stack[128];
     int32_t stack_traverser = 0;
     stack[0] = 0;
 
@@ -89,7 +89,7 @@ __global__ void CalculateForcesSorted(
             if (!warp_opens) {
                 if (is_active) {
                     float evaluated_mass = evaluated_com.w;
-                    float distance_sqr_soft = distance_sqr + softening;
+                    float distance_sqr_soft = distance_sqr + softening * softening;
 
                     float inv_dist = rsqrtf(distance_sqr_soft);
                     float inv_dist_cube = inv_dist * inv_dist * inv_dist;

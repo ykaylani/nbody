@@ -14,8 +14,11 @@ constexpr uint16_t block_threads = 256;
 struct Solver {
     SceneSettings scene_settings;
 
+    virtual bool GetTreeBounds(const float4** bounds_min, const float4** bounds_max, uint32_t* node_count) const { return false; }
+
     virtual void Solve(BodyData& body_data, float dt) = 0;
     Solver(const SceneSettings& settings) : scene_settings(settings) {}
+
     virtual ~Solver() = default;
 };
 
@@ -50,15 +53,34 @@ namespace Solvers {
         BarnesHutInterData inter_data;
         float opening_angle_criterion;
         int32_t leaf_bucket_size;
+        bool bounds_seeded = false;
+
+        bool GetTreeBounds(const float4** bounds_min, const float4** bounds_max, uint32_t* node_count) const override {
+            *bounds_min = inter_data.node_bounds_min;
+            *bounds_max = inter_data.node_bounds_max;
+            *node_count = scene_settings.body_count - 1;
+            return true;
+        }
 
         void Solve(BodyData& body_data, float dt) override {
             uint32_t body_count = scene_settings.body_count;
             uint32_t blocks_grid = (body_count + block_threads - 1) / block_threads;
 
+            if (!bounds_seeded) {
+                SeedSceneBounds(
+                    body_data.positions_1,
+                    inter_data.node_bounds_min,
+                    inter_data.node_bounds_max,
+                    body_count);
+                bounds_seeded = true;
+            }
+
             EncodeF3A<<<blocks_grid, block_threads>>>(
                 body_data.positions_1,
                 inter_data.encodings,
-                body_count);
+                body_count,
+                inter_data.node_bounds_min,
+                inter_data.node_bounds_max);
 
             thrust::sequence(
                 thrust::device,

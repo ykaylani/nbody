@@ -1,25 +1,30 @@
 [settings.execution]
-cuda_errchk = false
-hotloop_time = false
-total_hotloop_time = true
-mechanical_energy = false
+cuda_errchk = false # CUDA error checking
+hotloop_time = false # Time for each step
+total_hotloop_time = false # Total hotloop time
 
 [settings.physical]
 body_count = 45000
-steps = 1000
+steps = 10000
 dt = 0.02
-softening = 64.0
-base_mass = 1e17
+softening = 16.0
+base_mass = 2.5e13
+
+[settings.visualization]
+visualize = false # visualize particles
+visualize_tree = false # visualize radix tree
+min_node_extent = 5.0 # smallest tree nodes to render
+n_frames_snap = 10 # render every N frames
 
 [solver]
-method = "barnes_hut" # barnes_hut or all_pairs
+method = "barnes_hut" # barnes_hut / all_pairs
 
 [solver.barnes_hut]
-acceptance_criterion = 0.5
-leaf_bucket_size = 64 # optional (default is 32)
+acceptance_criterion = 0.5 # Barnes-Hut theta
+leaf_bucket_size = 16
 
 [distribution]
-method = "plummer"  # random_cube, random_sphere, or plummer
+method = "plummer" # plummer / random_cube / random_sphere / kuzmin
 
 [distribution.random_cube]
 size = 15000.0
@@ -31,11 +36,21 @@ radius = 15000.0
 max_radius = 15000.0
 scale_radius = 2800.0
 
+[distribution.kuzmin]
+max_radius = 25000
+scale_radius = 2500
+scale_height = 400
+
 [exporter]
-method = "none" # csv, xdmf, vtp, or none
-data_directory = "../"
+method = "none" # csv / vtp / xdmf / none
+data_directory = ".."
 data_file_name = "sim_data"
 
 [exporter.xdmf]
-metadata_directory = "../"
+metadata_directory = ".."
 metadata_out_name = "sim_metadata"
+
+[exporter.energy]
+method = "csv" # csv / none
+data_directory = ".."
+data_file_name = "sim_energy"
