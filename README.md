@@ -8,13 +8,13 @@ A GPU N-Body simulation written in C++ and CUDA.
 </p>
 
 ## Features
-* **GPU Compute:** Physics calculations are offloaded to the GPU using CUDA.
+Calculations are offloaded to the GPU using CUDA.
 * **Modular Architecture:** Built using the Strategy pattern, allowing you to swap out components:
-    * **Solvers:** Pluggable propagation algorithms. 
-    * **Distributions:** Customizable initial condition generators.
-    * **Exporters:** Flexible data output handlers.
-* **Multiple Export Formats:** Export simulation data in **XDMF**, **VTP**, or **CSV** formats.
+    * **Solvers:** **Barnes-Hut (Radix Tree) / All-Pairs** solvers
+    * **Distributions:** **Plummer / Kuzmin / Random** distributions
+    * **Exporters:** **CSV / XDMF / VTP** exporters
 * **Configuration:** Tweak simulation constants (such as body count, time delta (`dt`), softening factors, and debugging flags) using a config.ini file.
+* **Visualization:** Visualize the simulation using OpenGL.
 
 ## Prerequisites
 To compile and run this project, you will need:
@@ -59,8 +59,3 @@ Test design can be found in [the benchmark specification](BENCHMARKS_SPEC.md).
 
 * All changes are documented in [CHANGELOG.md](CHANGELOG.md).
 * [MIT License](LICENSE).
-
-
-[v0.5.0 Barnes-Hut]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.4...v0.5.0
-[v0.5.0 All-Pairs]: https://gitlab.com/yks4892825/nbody/-/compare/v0.4.4...v0.5.0
-[NVIDIA Sample]: https://github.com/NVIDIA/cuda-samples/tree/master/cpp/5_Domain_Specific/nbody
