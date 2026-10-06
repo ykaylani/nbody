@@ -46,8 +46,8 @@ To run the simulation:
 
 For the config.ini structure, go to [config.ini.example](config.ini.example).
 
-## Tests
-Test design can be found in [the benchmark specification](BENCHMARKS_SPEC.md).
+## Benchmarks
+Benchmark design can be found in [the benchmark specification](BENCHMARKS_SPEC.md).
 
 <p>
   <img src="imgs/scaling.png" alt="Solver Scaling Benchmark"/>
