@@ -63,6 +63,7 @@ Benchmark design can be found in [the benchmark specification](BENCHMARKS_SPEC.m
   <img src="imgs/secons.png" alt="Energy Conservation">
   <figcaption>Energy stays within roughly 0.05% of its initial value over 50,000 steps for All-Pairs and all three θ values.</figcaption>
 </figure>
+
 ## Information
 
 * All changes are documented in [CHANGELOG.md](CHANGELOG.md).
