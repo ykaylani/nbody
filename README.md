@@ -41,7 +41,7 @@ cmake --build . --config Release
 Once the build process is complete, the executable should be located inside a subfolder.
 To run the simulation:
 ```bash
-./Release/nbody.exe /directory/of/config/config.ini
+./Release/nbody.exe directory/of/config/config.ini
 ```
 
 For the config.ini structure, go to [config.ini.example](config.ini.example).
@@ -51,8 +51,11 @@ Benchmark design can be found in [the benchmark specification](BENCHMARKS_SPEC.m
 
 <p>
   <img src="imgs/scaling.png" alt="Solver Scaling Benchmark"/>
+  Barnes-Hut overtakes All-Pairs between 2^14 and 2^16 bodies and scales to 4M+ on an RTX 4060.
   <img src="imgs/energytrj.png" alt="Energy Trajectory for Theta = 0.5"/>
+  Kinetic and potential energy stay in virial balance over 50,000 steps for Barnes-Hut at θ = 0.5 (N = 4,096, Plummer).
   <img src="imgs/secons.png" alt="Energy Conservation"/>
+  Energy stays within roughly 0.05% of its initial value over 50,000 steps for All-Pairs and all three θ values.
 </p>
 
 ## Information
