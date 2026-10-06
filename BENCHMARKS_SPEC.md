@@ -41,7 +41,7 @@ All snapshots are measured five times with the average of the middling three tak
 
 **Domain Scaling**
 
-As with the legacy Random Cube scaling test, the Plummer scale radius is not held constant across N. Packing more bodies into a fixed-radius Plummer sphere would raise local density as N grows, shrinking spacing relative to softening. Instead, the scale radius *a* grows with N to hold characteristic density constant:
+the Plummer scale radius is not held constant across N. Packing more bodies into a fixed radius Plummer sphere would raise local density as N grows, shrinking spacing relative to softening. Instead, the scale radius *a* grows with N to hold characteristic density constant:
 
 `a(N) = 15,000 * (N / 45,000)^(1/3)`
 
