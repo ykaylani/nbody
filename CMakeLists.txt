@@ -5,18 +5,12 @@ set(CMAKE_CUDA_STANDARD 20)
 
 add_executable(nbody src/main.cu
         src/cuda_solvers/all_pairs/all_pairs.cu
-
         src/cuda_solvers/barnes_hut/z_order.cu
         src/cuda_solvers/barnes_hut/radtree_build.cu
         src/cuda_solvers/barnes_hut/radtree_coms.cu
         src/cuda_solvers/barnes_hut/radtree_forces.cu
-
         src/cuda_solvers/diag/mechanical_energy.cu
-        src/visualization/visualizer.h
-        src/visualization/visualizer.cu
-        src/setup.h
-        src/strats/energy/energy_exporters.h
-        src/strats/energy/energy_calculator.h)
+        src/visualization/visualizer.cu)
 
 set_target_properties(nbody PROPERTIES
         CUDA_SEPARABLE_COMPILATION ON
